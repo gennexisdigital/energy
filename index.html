@@ -10,6 +10,81 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         
+        /* Login Modal Styles */
+        #loginModal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        
+        #loginModal.hidden {
+            display: none;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 1);
+            border-radius: 24px;
+            padding: 48px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(90deg, #2563eb, #0891b2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .login-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        #dashboardContainer {
+            display: none;
+        }
+        
+        #dashboardContainer.show {
+            display: block;
+        }
+        
         .glass-panel {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
@@ -120,359 +195,172 @@
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
 
-    <!-- Toast Notification -->
-    <div id="share-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
-        <i class="fas fa-check-circle text-emerald-400"></i>
-        <span id="toast-message" class="text-sm font-bold">Link copied to clipboard!</span>
+    <!-- Login Modal -->
+    <div id="loginModal">
+        <div class="login-card">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center text-white shadow-lg mx-auto mb-4">
+                    <i class="fas fa-globe text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900">Global Methanol Pivot Index</h2>
+                <p class="text-xs text-slate-500 uppercase tracking-wider mt-2">Intelligence Dashboard 2026</p>
+            </div>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
+                        <input type="password" id="passwordInput" class="login-input mt-2" placeholder="Enter dashboard password" required>
+                    </div>
+                    <div id="loginError" class="login-error"><i class="fas fa-exclamation-circle mr-1"></i> Incorrect password</div>
+                    <button type="submit" class="login-btn mt-6">
+                        <i class="fas fa-lock-open mr-2"></i>Access Dashboard
+                    </button>
+                </div>
+            </form>
+            <p class="text-[11px] text-slate-400 text-center mt-6">Authorized personnel only. All access is logged.</p>
+        </div>
     </div>
 
-    <!-- Sidebar Navigation -->
-    <nav class="hidden lg:flex fixed left-0 top-0 h-full w-20 flex-col items-center py-8 gap-8 border-r bg-white z-50">
-        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-            <i class="fas fa-globe text-xl"></i>
+    <!-- Dashboard Container -->
+    <div id="dashboardContainer">
+        <!-- Toast Notification -->
+        <div id="share-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+            <i class="fas fa-check-circle text-emerald-400"></i>
+            <span id="toast-message" class="text-sm font-bold">Link copied to clipboard!</span>
         </div>
-        <div class="flex flex-col gap-6 text-slate-400">
-            <button class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-chart-pie"></i></button>
-            <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-ship"></i></button>
-            <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-shield-alt"></i></button>
-        </div>
-    </nav>
 
-    <div class="lg:ml-20">
-        <!-- Header -->
-        <header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Global Methanol <span class="gradient-text">Pivot</span> Index</h1>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">International Energy Security Monitor 2026</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="downloadReport()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition shadow-md">
-                        <i class="fas fa-file-export"></i> Export Intelligence
-                    </button>
-                    <button onclick="copyShareLink()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                </div>
+        <!-- Sidebar Navigation -->
+        <nav class="hidden lg:flex fixed left-0 top-0 h-full w-20 flex-col items-center py-8 gap-8 border-r bg-white z-50">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-globe text-xl"></i>
             </div>
-        </header>
+            <div class="flex flex-col gap-6 text-slate-400">
+                <button class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-chart-pie"></i></button>
+                <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-ship"></i></button>
+                <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-shield-alt"></i></button>
+            </div>
+        </nav>
 
-        <main class="p-6 max-w-7xl mx-auto space-y-8">
-            
-            <!-- Global Stats -->
-            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-red-500">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Global Diesel Deficit</p>
-                    <h3 class="text-3xl font-black text-red-600">-12.4M <span class="text-sm">BPD</span></h3>
-                    <p class="text-[10px] text-red-400 mt-2 font-bold"><i class="fas fa-warning"></i> Highest in 30 Years</p>
-                </div>
-                <div onclick="showPivotNations()" class="glass-panel interactive-card p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Active Pivot Nations</p>
-                            <h3 class="text-3xl font-black text-orange-600">42</h3>
-                        </div>
-                        <i class="fas fa-chevron-right text-slate-300 mt-1"></i>
+        <div class="lg:ml-20">
+            <!-- Header -->
+            <header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40 px-6 py-4">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Global Methanol <span class="gradient-text">Pivot</span> Index</h1>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">International Energy Security Monitor 2026</p>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-2 font-bold italic">View the Coalition Map</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Retrofit Backlog</p>
-                    <h3 class="text-3xl font-black text-blue-600">14.2k</h3>
-                    <p class="text-[10px] text-slate-400 mt-2 font-bold">Active Engine Conversions</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Energy Cost Arbitrage</p>
-                    <h3 class="text-3xl font-black text-emerald-600">2.8x</h3>
-                    <p class="text-[10px] text-slate-400 mt-2 font-bold">Per GigaJoule parity</p>
-                </div>
-            </section>
-
-            <!-- Coalition Legend (Updated and more prominent) -->
-            <section id="pivot-nations-panel" class="hidden animate-in fade-in slide-in-from-top-4 duration-500">
-                <div class="glass-panel p-6 rounded-2xl border-orange-200 bg-orange-50/30">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-orange-100 pb-4">
-                        <div>
-                            <h3 class="text-lg font-black text-slate-900">Methanol Pivot Coalition | 2026 Map Legend</h3>
-                            <p class="text-xs text-slate-500">Classification of nation-state adoption urgency and infrastructure capability.</p>
-                        </div>
-                        <button onclick="document.getElementById('pivot-nations-panel').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
-                            <i class="fas fa-times-circle text-xl"></i>
+                    <div class="flex items-center gap-3">
+                        <button onclick="downloadReport()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition shadow-md">
+                            <i class="fas fa-file-export"></i> Export Intelligence
+                        </button>
+                        <button onclick="copyShareLink()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                        <button onclick="logoutDashboard()" class="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-sm font-bold transition">
+                            <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                <span class="text-xs font-black uppercase text-emerald-700">Secure / Leader</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600">Nations with domestic production capacity exceeding local diesel demand. (e.g., China, Malaysia, USA)</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border-l-4 border-blue-400 shadow-sm">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-3 h-3 rounded-full bg-blue-400"></span>
-                                <span class="text-xs font-black uppercase text-blue-700">Transitioning / Hubs</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600">Nations currently retrofitting infrastructure and establishing strategic bunkering. (e.g., Australia, Germany)</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                                <span class="text-xs font-black uppercase text-red-700">At Risk / Urgent</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600">Nations with < 14 days diesel supply. Pivot is critical for survival. (e.g., New Zealand, South Africa)</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> China</div>
-                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Malaysia</div>
-                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Australia</div>
-                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> New Zealand</div>
-                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> S. Africa</div>
-                        <div class="text-[9px] text-slate-400 flex items-center p-1.5 italic">+37 more...</div>
-                    </div>
                 </div>
-            </section>
+            </header>
 
-            <!-- Main Intelligence Layout -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Tabs -->
-                    <div class="flex items-center gap-6 border-b border-slate-200 px-2 overflow-x-auto">
-                        <button onclick="toggleView('regional')" id="btn-regional" class="pb-2 text-sm font-bold tab-active transition-all">APAC Market Pricing</button>
-                        <button onclick="toggleView('readiness')" id="btn-readiness" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Infrastructure Readiness</button>
-                        <button onclick="toggleView('global')" id="btn-global" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Global Cost Benchmarks</button>
+            <main class="p-6 max-w-7xl mx-auto space-y-8">
+                <!-- Rest of dashboard HTML content remains the same as original -->
+                
+                <!-- Global Stats -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-red-500">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Global Diesel Deficit</p>
+                        <h3 class="text-3xl font-black text-red-600">-12.4M <span class="text-sm">BPD</span></h3>
+                        <p class="text-[10px] text-red-400 mt-2 font-bold"><i class="fas fa-warning"></i> Highest in 30 Years</p>
                     </div>
-
-                    <!-- Map Container -->
-                    <div class="glass-panel rounded-2xl p-4 shadow-xl overflow-hidden bg-white border border-slate-200">
-                        <div id="map-display" class="regional-map-container relative">
-                            <div class="map-overlay" id="marker-overlay">
-                                <!-- Markers dynamically injected by JS -->
+                    <div onclick="showPivotNations()" class="glass-panel interactive-card p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Active Pivot Nations</p>
+                                <h3 class="text-3xl font-black text-orange-600">42</h3>
                             </div>
+                            <i class="fas fa-chevron-right text-slate-300 mt-1"></i>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold italic">View the Coalition Map</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Retrofit Backlog</p>
+                        <h3 class="text-3xl font-black text-blue-600">14.2k</h3>
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold">Active Engine Conversions</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Energy Cost Arbitrage</p>
+                        <h3 class="text-3xl font-black text-emerald-600">2.8x</h3>
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold">Per GigaJoule parity</p>
+                    </div>
+                </section>
+
+                <!-- Coalition Legend -->
+                <section id="pivot-nations-panel" class="hidden animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div class="glass-panel p-6 rounded-2xl border-orange-200 bg-orange-50/30">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-orange-100 pb-4">
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900">Methanol Pivot Coalition | 2026 Map Legend</h3>
+                                <p class="text-xs text-slate-500">Classification of nation-state adoption urgency and infrastructure capability.</p>
+                            </div>
+                            <button onclick="document.getElementById('pivot-nations-panel').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+                                <i class="fas fa-times-circle text-xl"></i>
+                            </button>
                         </div>
                         
-                        <div id="country-info" class="mt-4 p-6 rounded-2xl bg-slate-900 text-white hidden border border-slate-700 shadow-2xl transition-all duration-300">
-                        </div>
-                    </div>
-
-                    <!-- Table Container -->
-                    <div class="glass-panel rounded-2xl p-6 shadow-sm border border-slate-200">
-                        <h3 id="table-title" class="text-lg font-bold mb-6">APAC Market Price Index</h3>
-                        <div class="overflow-x-auto">
-                            <table id="data-table" class="w-full text-sm text-left">
-                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100" id="table-head">
-                                    <!-- Dynamic header -->
-                                </thead>
-                                <tbody class="divide-y divide-slate-50" id="table-body">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Side Panels -->
-                <div class="space-y-6">
-                    <div class="glass-panel rounded-2xl p-6 shadow-sm border border-slate-200">
-                        <h3 class="text-sm font-bold mb-4 uppercase tracking-wider text-slate-800">Supply Integrity</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                                    <i class="fas fa-industry text-xs"></i>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                    <span class="text-xs font-black uppercase text-emerald-700">Secure / Leader</span>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-bold">Waitara Hub (NZ)</p>
-                                    <p class="text-[10px] text-slate-500">Producing 2,400 tonnes/day domestic buffer.</p>
-                                </div>
+                                <p class="text-[11px] text-slate-600">Nations with domestic production capacity exceeding local diesel demand. (e.g., China, Malaysia, USA)</p>
                             </div>
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                    <i class="fas fa-ship text-xs"></i>
+                            <div class="bg-white p-4 rounded-xl border-l-4 border-blue-400 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-3 h-3 rounded-full bg-blue-400"></span>
+                                    <span class="text-xs font-black uppercase text-blue-700">Transitioning / Hubs</span>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-bold">Labuan Bunkering (MY)</p>
-                                    <p class="text-[10px] text-slate-500">Central transit point for North-South shipping.</p>
+                                <p class="text-[11px] text-slate-600">Nations currently retrofitting infrastructure and establishing strategic bunkering. (e.g., Australia, Germany)</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="text-xs font-black uppercase text-red-700">At Risk / Urgent</span>
                                 </div>
+                                <p class="text-[11px] text-slate-600">Nations with < 14 days diesel supply. Pivot is critical for survival. (e.g., New Zealand, South Africa)</p>
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                            <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> China</div>
+                            <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Malaysia</div>
+                            <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Australia</div>
+                            <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> New Zealand</div>
+                            <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> S. Africa</div>
+                            <div class="text-[9px] text-slate-400 flex items-center p-1.5 italic">+37 more...</div>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="rounded-2xl p-6 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800 border-l-4 border-emerald-500">
-                        <h3 class="text-sm font-bold mb-2 text-white italic">Technical Insight</h3>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">
-                            Conversion kits for Caterpillar and Cummins diesel engines are now 98% standardized for Methanol/Diesel dual-fuel blending.
-                        </p>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
+                <!-- Main Intelligence Layout -->
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Tabs -->
+                        <div class="flex items-center gap-6 border-b border-slate-200 px-2 overflow-x-auto">
+                            <button onclick="toggleView('regional')" id="btn-regional" class="pb-2 text-sm font-bold tab-active transition-all">APAC Market Pricing</button>
+                            <button onclick="toggleView('readiness')" id="btn-readiness" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Infrastructure Readiness</button>
+                            <button onclick="toggleView('global')" id="btn-global" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Global Cost Benchmarks</button>
+                        </div>
 
-    <script>
-        const views = {
-            regional: {
-                title: "APAC Regional Fuel Market Index",
-                mapConfig: "350% 95% 75%", // Size positionX positionY
-                markers: [
-                    { top: '48%', left: '42%', label: 'INDONESIA', color: 'bg-emerald-500', key: 'indonesia' },
-                    { top: '38%', left: '36%', label: 'MALAYSIA', color: 'bg-emerald-500', key: 'malaysia' },
-                    { top: '28%', left: '48%', label: 'PHILIPPINES', color: 'bg-red-500 pulse-red', key: 'philippines' },
-                    { top: '68%', left: '62%', label: 'AUSTRALIA', color: 'bg-emerald-500', key: 'australia' },
-                    { top: '84%', left: '84%', label: 'N. ZEALAND', color: 'bg-red-600 pulse-red', key: 'new-zealand' }
-                ],
-                headers: ['Region', 'Diesel (USD/L)', 'Methanol (USD/L)', 'Production Node', 'Fuel Reduction'],
-                rows: [
-                    ['New Zealand', '$3.43', '$1.25', 'Methanex Taranaki', '63.5%'],
-                    ['Australia', '$2.20', '$0.85', 'Coogee Kwinana', '61.4%'],
-                    ['Malaysia', '$0.95', '$0.38', 'Petronas Labuan', '60.0%'],
-                    ['Indonesia', '$1.10', '$0.42', 'PT Kaltim Bontang', '61.8%']
-                ]
-            },
-            readiness: {
-                title: "Infrastructure Readiness & Technical Capacity",
-                mapConfig: "350% 95% 75%",
-                markers: [
-                    { top: '35%', left: '38%', label: 'HUB: LABUAN', color: 'bg-blue-600', key: 'malaysia', icon: 'fas fa-anchor' },
-                    { top: '45%', left: '42%', label: 'HUB: BONTANG', color: 'bg-blue-600', key: 'indonesia', icon: 'fas fa-industry' },
-                    { top: '65%', left: '60%', label: 'HUB: KWINANA', color: 'bg-blue-600', key: 'australia', icon: 'fas fa-tools' },
-                    { top: '82%', left: '82%', label: 'HUB: WAITARA', color: 'bg-blue-600', key: 'new-zealand', icon: 'fas fa-shield-alt' }
-                ],
-                headers: ['Hub Facility', 'Storage (MT)', 'Bunkering Type', 'Retrofit Slots', 'Readiness Score'],
-                rows: [
-                    ['Waitara/Motunui (NZ)', '180k', 'Terminal Pipeline', '40/month', '84/100'],
-                    ['Labuan Marine (MY)', '450k', 'Barge-to-Ship', '120/month', '91/100'],
-                    ['Kwinana (AU)', '320k', 'Truck-to-Ship', '65/month', '78/100'],
-                    ['Bontang (ID)', '280k', 'Direct Jetty', '55/month', '82/100']
-                ]
-            },
-            global: {
-                title: "Global Cost Benchmarks (2026)",
-                mapConfig: "100% 50% 50%",
-                markers: [
-                    { top: '32%', left: '18%', label: 'USA', color: 'bg-yellow-500', key: 'usa' },
-                    { top: '72%', left: '30%', label: 'BRAZIL', color: 'bg-emerald-500', key: 'brazil' },
-                    { top: '28%', left: '48%', label: 'GERMANY', color: 'bg-yellow-500', key: 'germany' },
-                    { top: '78%', left: '54%', label: 'S. AFRICA', color: 'bg-red-500 pulse-red', key: 'south-africa' },
-                    { top: '35%', left: '78%', label: 'CHINA', color: 'bg-emerald-500', key: 'china' }
-                ],
-                headers: ['Nation', 'Diesel Price', 'Methanol Price', 'Feedstock Type', 'ROI Period'],
-                rows: [
-                    ['China', '$1.12', '$0.45', 'Coal Gasification', '14 Months'],
-                    ['USA', '$1.45', '$0.62', 'Shale Methane', '18 Months'],
-                    ['Brazil', '$1.30', '$0.58', 'Biomass Waste', '21 Months'],
-                    ['Germany', '$1.92', '$0.88', 'Renewable H2', '36 Months']
-                ]
-            }
-        };
+                        <!-- Map Container -->
+                        <div class="glass-panel rounded-2xl p-4 shadow-xl overflow-hidden bg-white border border-slate-200">
+                            <div id="map-display" class="regional-map-container relative">
+                                <div class="map-overlay" id="marker-overlay"></div>
+                            </div>
+                            <div id="country-info" class="mt-4 p-6 rounded-2xl bg-slate-900 text-white hidden border border-slate-700 shadow-2xl transition-all duration-300"></div>
+                        </div>
 
-        const globalData = {
-            'usa': { name: 'USA', reserves: '31 Days', status: 'TRANSITIONING', color: 'text-yellow-500', details: 'Focused on Gulf Coast expansion for maritime exports.' },
-            'china': { name: 'China', reserves: '45 Days', status: 'LEADER', color: 'text-emerald-500', details: 'Largest domestic methanol-to-diesel fleet in operation.' },
-            'brazil': { name: 'Brazil', reserves: '38 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Pioneering agricultural biomass for regional fuel independence.' },
-            'germany': { name: 'Germany', reserves: '22 Days', status: 'WARNING', color: 'text-yellow-500', details: 'Industrial hub focusing on green-methanol supply chains.' },
-            'south-africa': { name: 'South Africa', reserves: '11 Days', status: 'CRITICAL', color: 'text-red-500', details: 'Urgent fuel pivot to stabilize transport networks.' },
-            'philippines': { name: 'Philippines', reserves: '12 Days', status: 'CRITICAL', color: 'text-red-500', details: 'Developing regional nodes to bypass diesel rationing.' },
-            'new-zealand': { name: 'New Zealand', reserves: '9 Days', status: 'COLLAPSE RISK', color: 'text-red-600', details: 'Waitara facility is the sole strategic fuel buffer.' },
-            'indonesia': { name: 'Indonesia', reserves: '42 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Inter-island ferry fleet conversion is primary focus.' },
-            'malaysia': { name: 'Malaysia', reserves: '55 Days', status: 'SECURE', color: 'text-emerald-400', details: 'Petronas Labuan hub acting as South China Sea refueling anchor.' },
-            'australia': { name: 'Australia', reserves: '24 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Transitioning iron ore logistics to dual-fuel methanol.' }
-        };
-
-        function toggleView(type) {
-            const config = views[type];
-            const mapDisplay = document.getElementById('map-display');
-            const overlay = document.getElementById('marker-overlay');
-            const tableHead = document.getElementById('table-head');
-            const tableBody = document.getElementById('table-body');
-            const tableTitle = document.getElementById('table-title');
-
-            // Update Tab UI
-            ['btn-regional', 'btn-readiness', 'btn-global'].forEach(id => {
-                const btn = document.getElementById(id);
-                btn.classList.remove('tab-active');
-                btn.classList.add('text-slate-400');
-            });
-            document.getElementById(`btn-${type}`).classList.add('tab-active');
-            document.getElementById(`btn-${type}`).classList.remove('text-slate-400');
-
-            // Update Map Background
-            const [size, px, py] = config.mapConfig.split(' ');
-            mapDisplay.style.backgroundSize = size;
-            mapDisplay.style.backgroundPosition = `${px} ${py}`;
-
-            // Update Map Markers
-            overlay.innerHTML = '';
-            config.markers.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'country-marker';
-                div.style.top = m.top;
-                div.style.left = m.left;
-                div.onclick = () => showDetails(m.key);
-                div.innerHTML = `
-                    <div class="marker-dot ${m.color}"></div>
-                    <span class="marker-label">${m.icon ? `<i class="${m.icon} mr-1"></i>` : ''}${m.label}</span>
-                `;
-                overlay.appendChild(div);
-            });
-
-            // Update Table
-            tableTitle.innerText = config.title;
-            tableHead.innerHTML = `<tr>${config.headers.map(h => `<th class="pb-4">${h}</th>`).join('')}</tr>`;
-            tableBody.innerHTML = config.rows.map(r => `
-                <tr class="hover:bg-slate-50 cursor-pointer">
-                    ${r.map((cell, idx) => `<td class="py-4 ${idx === 0 ? 'font-bold' : idx === r.length - 1 ? 'text-right font-black text-emerald-600' : ''}">${cell}</td>`).join('')}
-                </tr>
-            `).join('');
-
-            document.getElementById('country-info').classList.add('hidden');
-        }
-
-        function showPivotNations() {
-            const panel = document.getElementById('pivot-nations-panel');
-            panel.classList.remove('hidden');
-            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function showDetails(key) {
-            const data = globalData[key];
-            const infoBox = document.getElementById('country-info');
-            infoBox.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div class="flex-1">
-                        <h4 class="text-2xl font-black mb-1">${data.name} <span class="text-xs uppercase px-2 py-1 bg-blue-600 rounded ml-2">${data.status}</span></h4>
-                        <p class="text-slate-400 text-xs">${data.details}</p>
-                    </div>
-                    <div class="text-center bg-white/5 p-4 rounded-xl border border-white/10 min-w-[150px]">
-                        <p class="text-[9px] text-slate-500 font-black uppercase">Fuel Margin</p>
-                        <p class="text-4xl font-black ${data.color}">${data.reserves}</p>
-                    </div>
-                </div>
-            `;
-            infoBox.classList.remove('hidden');
-            infoBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-
-        function copyShareLink() {
-            const el = document.createElement('textarea');
-            el.value = window.location.href;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            const toast = document.getElementById('share-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function downloadReport() {
-            alert('Intelligence packet generating. Check browser downloads.');
-        }
-
-        // Initialize first view
-        toggleView('regional');
-    </script>
-</body>
-</html>
+                        <!-- Table Container -->
+                        <div class="glass-panel rounded-2xl p-6 shadow-sm border*
+
