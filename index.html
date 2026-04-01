@@ -14,12 +14,14 @@
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(226, 232, 240, 1);
+            transition: all 0.2s ease;
         }
 
-        .dark-card {
-            background: #1e293b;
-            color: white;
-            border: 1px solid #334155;
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
+            cursor: pointer;
         }
 
         .map-container {
@@ -65,11 +67,6 @@
             z-index: 20;
         }
 
-        .country-marker:hover {
-            transform: scale(1.4) translateY(-5px);
-            z-index: 100;
-        }
-
         .marker-dot {
             width: 12px;
             height: 12px;
@@ -79,6 +76,7 @@
         }
 
         .pulse-red { animation: shadow-pulse-red 1.5s infinite; }
+        
         @keyframes shadow-pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
@@ -141,7 +139,7 @@
     </nav>
 
     <div class="lg:ml-20">
-        <!-- Top Navigation -->
+        <!-- Header -->
         <header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40 px-6 py-4">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -161,82 +159,98 @@
 
         <main class="p-6 max-w-7xl mx-auto space-y-8">
             
-            <!-- Global Dashboard Summary -->
+            <!-- Global Stats -->
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-red-500">
                     <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Global Diesel Deficit</p>
                     <h3 class="text-3xl font-black text-red-600">-12.4M <span class="text-sm">BPD</span></h3>
                     <p class="text-[10px] text-red-400 mt-2 font-bold"><i class="fas fa-warning"></i> Highest in 30 Years</p>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Active Pivot Nations</p>
-                    <h3 class="text-3xl font-black text-orange-600">42</h3>
-                    <p class="text-[10px] text-slate-400 mt-2 font-bold">Integrating Methanol Feedstocks</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Biomass Methanol Yield</p>
-                    <h3 class="text-3xl font-black text-emerald-600">+18%</h3>
-                    <p class="text-[10px] text-emerald-500 mt-2 font-bold"><i class="fas fa-arrow-up"></i> Supply Outpacing Diesel</p>
+                <div onclick="showPivotNations()" class="glass-panel interactive-card p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Active Pivot Nations</p>
+                            <h3 class="text-3xl font-black text-orange-600">42</h3>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-300 mt-1"></i>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 font-bold italic">View the Coalition Map</p>
                 </div>
                 <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Retrofit Backlog</p>
+                    <h3 class="text-3xl font-black text-blue-600">14.2k</h3>
+                    <p class="text-[10px] text-slate-400 mt-2 font-bold">Active Engine Conversions</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500">
                     <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Energy Cost Arbitrage</p>
-                    <h3 class="text-3xl font-black text-blue-600">2.8x</h3>
+                    <h3 class="text-3xl font-black text-emerald-600">2.8x</h3>
                     <p class="text-[10px] text-slate-400 mt-2 font-bold">Per GigaJoule parity</p>
+                </div>
+            </section>
+
+            <!-- Coalition Legend (Updated and more prominent) -->
+            <section id="pivot-nations-panel" class="hidden animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="glass-panel p-6 rounded-2xl border-orange-200 bg-orange-50/30">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-orange-100 pb-4">
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900">Methanol Pivot Coalition | 2026 Map Legend</h3>
+                            <p class="text-xs text-slate-500">Classification of nation-state adoption urgency and infrastructure capability.</p>
+                        </div>
+                        <button onclick="document.getElementById('pivot-nations-panel').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+                            <i class="fas fa-times-circle text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                <span class="text-xs font-black uppercase text-emerald-700">Secure / Leader</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600">Nations with domestic production capacity exceeding local diesel demand. (e.g., China, Malaysia, USA)</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border-l-4 border-blue-400 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-3 h-3 rounded-full bg-blue-400"></span>
+                                <span class="text-xs font-black uppercase text-blue-700">Transitioning / Hubs</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600">Nations currently retrofitting infrastructure and establishing strategic bunkering. (e.g., Australia, Germany)</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span class="text-xs font-black uppercase text-red-700">At Risk / Urgent</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600">Nations with < 14 days diesel supply. Pivot is critical for survival. (e.g., New Zealand, South Africa)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> China</div>
+                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Malaysia</div>
+                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Australia</div>
+                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> New Zealand</div>
+                        <div class="flex items-center gap-2 p-1.5 bg-white/60 rounded border text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> S. Africa</div>
+                        <div class="text-[9px] text-slate-400 flex items-center p-1.5 italic">+37 more...</div>
+                    </div>
                 </div>
             </section>
 
             <!-- Main Intelligence Layout -->
             <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
                 <div class="lg:col-span-2 space-y-6">
-                    <!-- Map & Table Switcher Tabs -->
-                    <div class="flex items-center gap-6 border-b border-slate-200 px-2 overflow-x-auto whitespace-nowrap">
+                    <!-- Tabs -->
+                    <div class="flex items-center gap-6 border-b border-slate-200 px-2 overflow-x-auto">
                         <button onclick="toggleView('regional')" id="btn-regional" class="pb-2 text-sm font-bold tab-active transition-all">APAC Market Pricing</button>
-                        <button onclick="toggleView('readiness')" id="btn-readiness" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Infrastructure Readiness Index</button>
-                        <button onclick="toggleView('global')" id="btn-global" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Global Cost Comparison</button>
+                        <button onclick="toggleView('readiness')" id="btn-readiness" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Infrastructure Readiness</button>
+                        <button onclick="toggleView('global')" id="btn-global" class="pb-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Global Cost Benchmarks</button>
                     </div>
 
-                    <!-- The Maps Display Area -->
+                    <!-- Map Container -->
                     <div class="glass-panel rounded-2xl p-4 shadow-xl overflow-hidden bg-white border border-slate-200">
-                        <!-- Global Map -->
-                        <div id="map-global" class="map-container relative hidden">
-                            <div class="map-overlay">
-                                <div class="country-marker top-[32%] left-[18%]" onclick="showDetails('usa')">
-                                    <div class="marker-dot bg-yellow-500"></div><span class="marker-label">USA</span>
-                                </div>
-                                <div class="country-marker top-[72%] left-[30%]" onclick="showDetails('brazil')">
-                                    <div class="marker-dot bg-emerald-500"></div><span class="marker-label">BRAZIL</span>
-                                </div>
-                                <div class="country-marker top-[28%] left-[48%]" onclick="showDetails('germany')">
-                                    <div class="marker-dot bg-yellow-500"></div><span class="marker-label">GERMANY</span>
-                                </div>
-                                <div class="country-marker top-[78%] left-[54%]" onclick="showDetails('south-africa')">
-                                    <div class="marker-dot bg-red-500 pulse-red"></div><span class="marker-label">S. AFRICA</span>
-                                </div>
-                                <div class="country-marker top-[35%] left-[78%]" onclick="showDetails('china')">
-                                    <div class="marker-dot bg-emerald-500"></div><span class="marker-label">CHINA</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Regional APAC Map -->
-                        <div id="map-regional" class="regional-map-container relative">
-                            <div class="map-overlay">
-                                <div class="country-marker top-[48%] left-[42%]" onclick="showDetails('indonesia')">
-                                    <div class="marker-dot bg-emerald-500"></div><span class="marker-label">INDONESIA</span>
-                                </div>
-                                <div class="country-marker top-[38%] left-[36%]" onclick="showDetails('malaysia')">
-                                    <div class="marker-dot bg-emerald-500"></div><span class="marker-label">MALAYSIA</span>
-                                </div>
-                                <div class="country-marker top-[28%] left-[48%]" onclick="showDetails('philippines')">
-                                    <div class="marker-dot bg-red-500 pulse-red"></div><span class="marker-label">PHILIPPINES</span>
-                                </div>
-                                <div class="country-marker top-[68%] left-[62%]" onclick="showDetails('australia')">
-                                    <div class="marker-dot bg-yellow-500"></div><span class="marker-label">AUSTRALIA</span>
-                                </div>
-                                <div class="country-marker top-[84%] left-[84%]" onclick="showDetails('new-zealand')">
-                                    <div class="marker-dot bg-red-600 pulse-red"></div><span class="marker-label">N. ZEALAND</span>
-                                </div>
+                        <div id="map-display" class="regional-map-container relative">
+                            <div class="map-overlay" id="marker-overlay">
+                                <!-- Markers dynamically injected by JS -->
                             </div>
                         </div>
                         
@@ -244,299 +258,221 @@
                         </div>
                     </div>
 
-                    <!-- Tables Section -->
+                    <!-- Table Container -->
                     <div class="glass-panel rounded-2xl p-6 shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 id="table-title" class="text-lg font-bold">APAC Market Price Index</h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] bg-blue-100 text-blue-700 font-black px-2 py-1 rounded">CURRENCY: USD</span>
-                                <span class="text-[10px] bg-slate-100 text-slate-600 font-black px-2 py-1 rounded">REF: APRIL 2026</span>
-                            </div>
-                        </div>
-                        
+                        <h3 id="table-title" class="text-lg font-bold mb-6">APAC Market Price Index</h3>
                         <div class="overflow-x-auto">
-                            <!-- Global Table -->
-                            <table id="table-global" class="w-full text-sm text-left hidden">
-                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100">
-                                    <tr>
-                                        <th class="pb-4">Target Nation</th>
-                                        <th class="pb-4">Diesel (USD/L)</th>
-                                        <th class="pb-4">Methanol (USD/L)</th>
-                                        <th class="pb-4">Production Model</th>
-                                        <th class="pb-4 text-right">Net Energy Saving (%)</th>
-                                    </tr>
+                            <table id="data-table" class="w-full text-sm text-left">
+                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100" id="table-head">
+                                    <!-- Dynamic header -->
                                 </thead>
-                                <tbody class="divide-y divide-slate-50">
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('usa')">
-                                        <td class="py-4 font-bold">United States</td>
-                                        <td class="py-4 text-slate-700 font-bold">$1.45</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.62</td>
-                                        <td class="py-4 text-xs">Shale Gas to Methanol</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">57.2%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('china')">
-                                        <td class="py-4 font-bold">China</td>
-                                        <td class="py-4 text-slate-700 font-bold">$1.12</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.45</td>
-                                        <td class="py-4 text-xs">Coal Gasification</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">59.8%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('brazil')">
-                                        <td class="py-4 font-bold">Brazil</td>
-                                        <td class="py-4 text-slate-700 font-bold">$1.30</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.58</td>
-                                        <td class="py-4 text-xs">Agri-Waste Biomass</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">55.4%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <!-- APAC Specific Table -->
-                            <table id="table-regional" class="w-full text-sm text-left">
-                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100">
-                                    <tr>
-                                        <th class="pb-4">Region</th>
-                                        <th class="pb-4">Diesel (USD/L)</th>
-                                        <th class="pb-4">Methanol (USD/L)</th>
-                                        <th class="pb-4">Hub Origin</th>
-                                        <th class="pb-4 text-right">Fuel OpEx Reduction</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-50">
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('new-zealand')">
-                                        <td class="py-4 font-bold">New Zealand</td>
-                                        <td class="py-4 text-slate-700 font-bold">$3.43</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$1.25</td>
-                                        <td class="py-4 text-xs">Waitara/Motunui Hub</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">63.5%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('australia')">
-                                        <td class="py-4 font-bold">Australia</td>
-                                        <td class="py-4 text-slate-700 font-bold">$2.20</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.85</td>
-                                        <td class="py-4 text-xs">Coogee Kwinana Port</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">61.4%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('malaysia')">
-                                        <td class="py-4 font-bold">Malaysia</td>
-                                        <td class="py-4 text-slate-700 font-bold">$0.95</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.38</td>
-                                        <td class="py-4 text-xs">Petronas Labuan Hub</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">60.0%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('indonesia')">
-                                        <td class="py-4 font-bold">Indonesia</td>
-                                        <td class="py-4 text-slate-700 font-bold">$1.10</td>
-                                        <td class="py-4 text-emerald-600 font-bold">$0.42</td>
-                                        <td class="py-4 text-xs">Kaltim Methanol Ind.</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">61.8%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <!-- Methanol Readiness Table -->
-                            <table id="table-readiness" class="w-full text-sm text-left hidden">
-                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100">
-                                    <tr>
-                                        <th class="pb-4">Market</th>
-                                        <th class="pb-4">Terminal Storage (MT)</th>
-                                        <th class="pb-4">Bunkering Status</th>
-                                        <th class="pb-4">Retrofit Capacity (Units/Yr)</th>
-                                        <th class="pb-4 text-right">Readiness Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-50">
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('china')">
-                                        <td class="py-4 font-bold">China</td>
-                                        <td class="py-4 font-bold">2,400,000</td>
-                                        <td class="py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded">FULLY OPERATIONAL</span></td>
-                                        <td class="py-4 text-xs">850+ Dual-Fuel Convs.</td>
-                                        <td class="py-4 text-right font-black text-emerald-600">92/100</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('new-zealand')">
-                                        <td class="py-4 font-bold">New Zealand</td>
-                                        <td class="py-4 font-bold">180,000</td>
-                                        <td class="py-4"><span class="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">EXPANDING</span></td>
-                                        <td class="py-4 text-xs">Domestic Production Advantage</td>
-                                        <td class="py-4 text-right font-black text-blue-600">76/100</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 cursor-pointer" onclick="showDetails('usa')">
-                                        <td class="py-4 font-bold">United States</td>
-                                        <td class="py-4 font-bold">1,100,000</td>
-                                        <td class="py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded">HIGH CAPACITY</span></td>
-                                        <td class="py-4 text-xs">320 Locomotives/Yr</td>
-                                        <td class="py-4 text-right font-black text-blue-600">78/100</td>
-                                    </tr>
+                                <tbody class="divide-y divide-slate-50" id="table-body">
+                                    <!-- Dynamic rows -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Sidebar Content -->
+                <!-- Side Panels -->
                 <div class="space-y-6">
-                    <div class="dark-card rounded-2xl p-6 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800">
-                        <h3 class="text-lg font-bold mb-4 text-emerald-400">Strategic Pivot Logic</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                            Diesel refining relies on high-pressure hydrogenation. Methanol, conversely, can be synth-produced from <span class="text-white font-bold">direct atmospheric CO2 capture</span> or agricultural biomass, creating a localized energy loop.
-                        </p>
+                    <div class="glass-panel rounded-2xl p-6 shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold mb-4 uppercase tracking-wider text-slate-800">Supply Integrity</h3>
                         <div class="space-y-4">
-                            <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <h4 class="text-[10px] font-black uppercase text-blue-400 mb-1">Energy Density Correction</h4>
-                                <p class="text-[11px] text-slate-300">Volumetric energy density of Methanol is ~50% of Diesel. Displayed prices reflect raw purchase cost per litre before efficiency conversion.</p>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-industry text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Waitara Hub (NZ)</p>
+                                    <p class="text-[10px] text-slate-500">Producing 2,400 tonnes/day domestic buffer.</p>
+                                </div>
                             </div>
-                            <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-1">Oceanic Risk Focus</h4>
-                                <p class="text-[11px] text-slate-300">Isolated markets like NZ and Australia prioritize methanol due to the fragility of long-distance diesel tanker routes.</p>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-ship text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Labuan Bunkering (MY)</p>
+                                    <p class="text-[10px] text-slate-500">Central transit point for North-South shipping.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="glass-panel rounded-2xl p-6 shadow-sm border border-slate-200 border-l-4 border-blue-500">
-                        <h3 class="text-sm font-bold mb-3 uppercase tracking-wider text-slate-800">Supply Chain Resilience</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                                <span>DIESEL CHOKEPOINTS</span>
-                                <span>METHANOL LOCALIZATION</span>
-                            </div>
-                            <div class="w-full h-3 bg-slate-100 rounded-full flex overflow-hidden">
-                                <div class="bg-red-400 w-[68%]"></div>
-                                <div class="bg-emerald-400 w-[32%]"></div>
-                            </div>
-                            <p class="text-[10px] text-slate-500 leading-tight">Methanol localization has improved 4% since the last update, specifically driven by NZ domestic output stabilization.</p>
-                        </div>
+                    <div class="rounded-2xl p-6 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800 border-l-4 border-emerald-500">
+                        <h3 class="text-sm font-bold mb-2 text-white italic">Technical Insight</h3>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Conversion kits for Caterpillar and Cummins diesel engines are now 98% standardized for Methanol/Diesel dual-fuel blending.
+                        </p>
                     </div>
                 </div>
-
             </section>
-
         </main>
     </div>
 
-    <!-- Scripting -->
-    <textarea id="copy-buffer" style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"></textarea>
-    <a id="download-anchor" style="display: none"></a>
-
     <script>
-        window.onload = function() {
-            toggleView('regional');
+        const views = {
+            regional: {
+                title: "APAC Regional Fuel Market Index",
+                mapConfig: "350% 95% 75%", // Size positionX positionY
+                markers: [
+                    { top: '48%', left: '42%', label: 'INDONESIA', color: 'bg-emerald-500', key: 'indonesia' },
+                    { top: '38%', left: '36%', label: 'MALAYSIA', color: 'bg-emerald-500', key: 'malaysia' },
+                    { top: '28%', left: '48%', label: 'PHILIPPINES', color: 'bg-red-500 pulse-red', key: 'philippines' },
+                    { top: '68%', left: '62%', label: 'AUSTRALIA', color: 'bg-emerald-500', key: 'australia' },
+                    { top: '84%', left: '84%', label: 'N. ZEALAND', color: 'bg-red-600 pulse-red', key: 'new-zealand' }
+                ],
+                headers: ['Region', 'Diesel (USD/L)', 'Methanol (USD/L)', 'Production Node', 'Fuel Reduction'],
+                rows: [
+                    ['New Zealand', '$3.43', '$1.25', 'Methanex Taranaki', '63.5%'],
+                    ['Australia', '$2.20', '$0.85', 'Coogee Kwinana', '61.4%'],
+                    ['Malaysia', '$0.95', '$0.38', 'Petronas Labuan', '60.0%'],
+                    ['Indonesia', '$1.10', '$0.42', 'PT Kaltim Bontang', '61.8%']
+                ]
+            },
+            readiness: {
+                title: "Infrastructure Readiness & Technical Capacity",
+                mapConfig: "350% 95% 75%",
+                markers: [
+                    { top: '35%', left: '38%', label: 'HUB: LABUAN', color: 'bg-blue-600', key: 'malaysia', icon: 'fas fa-anchor' },
+                    { top: '45%', left: '42%', label: 'HUB: BONTANG', color: 'bg-blue-600', key: 'indonesia', icon: 'fas fa-industry' },
+                    { top: '65%', left: '60%', label: 'HUB: KWINANA', color: 'bg-blue-600', key: 'australia', icon: 'fas fa-tools' },
+                    { top: '82%', left: '82%', label: 'HUB: WAITARA', color: 'bg-blue-600', key: 'new-zealand', icon: 'fas fa-shield-alt' }
+                ],
+                headers: ['Hub Facility', 'Storage (MT)', 'Bunkering Type', 'Retrofit Slots', 'Readiness Score'],
+                rows: [
+                    ['Waitara/Motunui (NZ)', '180k', 'Terminal Pipeline', '40/month', '84/100'],
+                    ['Labuan Marine (MY)', '450k', 'Barge-to-Ship', '120/month', '91/100'],
+                    ['Kwinana (AU)', '320k', 'Truck-to-Ship', '65/month', '78/100'],
+                    ['Bontang (ID)', '280k', 'Direct Jetty', '55/month', '82/100']
+                ]
+            },
+            global: {
+                title: "Global Cost Benchmarks (2026)",
+                mapConfig: "100% 50% 50%",
+                markers: [
+                    { top: '32%', left: '18%', label: 'USA', color: 'bg-yellow-500', key: 'usa' },
+                    { top: '72%', left: '30%', label: 'BRAZIL', color: 'bg-emerald-500', key: 'brazil' },
+                    { top: '28%', left: '48%', label: 'GERMANY', color: 'bg-yellow-500', key: 'germany' },
+                    { top: '78%', left: '54%', label: 'S. AFRICA', color: 'bg-red-500 pulse-red', key: 'south-africa' },
+                    { top: '35%', left: '78%', label: 'CHINA', color: 'bg-emerald-500', key: 'china' }
+                ],
+                headers: ['Nation', 'Diesel Price', 'Methanol Price', 'Feedstock Type', 'ROI Period'],
+                rows: [
+                    ['China', '$1.12', '$0.45', 'Coal Gasification', '14 Months'],
+                    ['USA', '$1.45', '$0.62', 'Shale Methane', '18 Months'],
+                    ['Brazil', '$1.30', '$0.58', 'Biomass Waste', '21 Months'],
+                    ['Germany', '$1.92', '$0.88', 'Renewable H2', '36 Months']
+                ]
+            }
+        };
+
+        const globalData = {
+            'usa': { name: 'USA', reserves: '31 Days', status: 'TRANSITIONING', color: 'text-yellow-500', details: 'Focused on Gulf Coast expansion for maritime exports.' },
+            'china': { name: 'China', reserves: '45 Days', status: 'LEADER', color: 'text-emerald-500', details: 'Largest domestic methanol-to-diesel fleet in operation.' },
+            'brazil': { name: 'Brazil', reserves: '38 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Pioneering agricultural biomass for regional fuel independence.' },
+            'germany': { name: 'Germany', reserves: '22 Days', status: 'WARNING', color: 'text-yellow-500', details: 'Industrial hub focusing on green-methanol supply chains.' },
+            'south-africa': { name: 'South Africa', reserves: '11 Days', status: 'CRITICAL', color: 'text-red-500', details: 'Urgent fuel pivot to stabilize transport networks.' },
+            'philippines': { name: 'Philippines', reserves: '12 Days', status: 'CRITICAL', color: 'text-red-500', details: 'Developing regional nodes to bypass diesel rationing.' },
+            'new-zealand': { name: 'New Zealand', reserves: '9 Days', status: 'COLLAPSE RISK', color: 'text-red-600', details: 'Waitara facility is the sole strategic fuel buffer.' },
+            'indonesia': { name: 'Indonesia', reserves: '42 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Inter-island ferry fleet conversion is primary focus.' },
+            'malaysia': { name: 'Malaysia', reserves: '55 Days', status: 'SECURE', color: 'text-emerald-400', details: 'Petronas Labuan hub acting as South China Sea refueling anchor.' },
+            'australia': { name: 'Australia', reserves: '24 Days', status: 'STABLE', color: 'text-emerald-500', details: 'Transitioning iron ore logistics to dual-fuel methanol.' }
         };
 
         function toggleView(type) {
-            const globalMap = document.getElementById('map-global');
-            const regionalMap = document.getElementById('map-regional');
-            const globalTable = document.getElementById('table-global');
-            const regionalTable = document.getElementById('table-regional');
-            const readinessTable = document.getElementById('table-readiness');
-            
-            const btnGlobal = document.getElementById('btn-global');
-            const btnRegional = document.getElementById('btn-regional');
-            const btnReadiness = document.getElementById('btn-readiness');
+            const config = views[type];
+            const mapDisplay = document.getElementById('map-display');
+            const overlay = document.getElementById('marker-overlay');
+            const tableHead = document.getElementById('table-head');
+            const tableBody = document.getElementById('table-body');
             const tableTitle = document.getElementById('table-title');
 
-            // Reset UI state
-            [globalMap, regionalMap, globalTable, regionalTable, readinessTable].forEach(el => el.classList.add('hidden'));
-            [btnGlobal, btnRegional, btnReadiness].forEach(el => {
-                el.classList.remove('tab-active');
-                el.classList.add('text-slate-400');
+            // Update Tab UI
+            ['btn-regional', 'btn-readiness', 'btn-global'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-slate-400');
+            });
+            document.getElementById(`btn-${type}`).classList.add('tab-active');
+            document.getElementById(`btn-${type}`).classList.remove('text-slate-400');
+
+            // Update Map Background
+            const [size, px, py] = config.mapConfig.split(' ');
+            mapDisplay.style.backgroundSize = size;
+            mapDisplay.style.backgroundPosition = `${px} ${py}`;
+
+            // Update Map Markers
+            overlay.innerHTML = '';
+            config.markers.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'country-marker';
+                div.style.top = m.top;
+                div.style.left = m.left;
+                div.onclick = () => showDetails(m.key);
+                div.innerHTML = `
+                    <div class="marker-dot ${m.color}"></div>
+                    <span class="marker-label">${m.icon ? `<i class="${m.icon} mr-1"></i>` : ''}${m.label}</span>
+                `;
+                overlay.appendChild(div);
             });
 
-            if (type === 'global') {
-                globalMap.classList.remove('hidden');
-                globalTable.classList.remove('hidden');
-                btnGlobal.classList.add('tab-active');
-                btnGlobal.classList.remove('text-slate-400');
-                tableTitle.innerText = "Global Fuel Cost Comparison (USD/L)";
-            } else if (type === 'readiness') {
-                regionalMap.classList.remove('hidden');
-                readinessTable.classList.remove('hidden');
-                btnReadiness.classList.add('tab-active');
-                btnReadiness.classList.remove('text-slate-400');
-                tableTitle.innerText = "Methanol Infrastructure Readiness (Technical Capacity)";
-            } else {
-                regionalMap.classList.remove('hidden');
-                regionalTable.classList.remove('hidden');
-                btnRegional.classList.add('tab-active');
-                btnRegional.classList.remove('text-slate-400');
-                tableTitle.innerText = "APAC Regional Fuel Market Index";
-            }
+            // Update Table
+            tableTitle.innerText = config.title;
+            tableHead.innerHTML = `<tr>${config.headers.map(h => `<th class="pb-4">${h}</th>`).join('')}</tr>`;
+            tableBody.innerHTML = config.rows.map(r => `
+                <tr class="hover:bg-slate-50 cursor-pointer">
+                    ${r.map((cell, idx) => `<td class="py-4 ${idx === 0 ? 'font-bold' : idx === r.length - 1 ? 'text-right font-black text-emerald-600' : ''}">${cell}</td>`).join('')}
+                </tr>
+            `).join('');
+
+            document.getElementById('country-info').classList.add('hidden');
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('share-toast');
-            const toastMsg = document.getElementById('toast-message');
-            toastMsg.innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        function showPivotNations() {
+            const panel = document.getElementById('pivot-nations-panel');
+            panel.classList.remove('hidden');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        function copyShareLink() {
-            const buffer = document.getElementById('copy-buffer');
-            buffer.value = window.location.href;
-            document.body.appendChild(buffer);
-            buffer.select();
-            document.execCommand('copy');
-            showToast('Dashboard link copied!');
-        }
-
-        function downloadReport() {
-            const report = `GLOBAL METHANOL TRANSITION INTELLIGENCE REPORT 2026\n\nMARKET HIGHLIGHTS:\n- USA Savings: 57.2% vs Diesel\n- China Savings: 59.8% vs Diesel\n- NZ Energy Risk: Critical (9-day reserves)\n\nInfrastructure Note: Global bunkering readiness increased by 14% this quarter.`;
-            const blob = new Blob([report], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.getElementById('download-anchor');
-            a.href = url; a.download = `Methanol_Pivot_Intelligence_Q2_2026.txt`; a.click();
-            window.URL.revokeObjectURL(url);
-            showToast('Exporting Data as TXT...');
-        }
-
-        const globalData = {
-            'usa': { name: 'USA', reserves: '31 Days', status: 'TRANSITIONING', color: 'text-yellow-500', prices: { diesel: '$1.45', methanol: '$0.62', source: 'US Gulf Coast Hub' }, details: 'Accelerated conversion of maritime and rail sectors. Major methanol expansion projects in Louisiana and Texas to offset import volatility.' },
-            'china': { name: 'China', reserves: '45 Days', status: 'LEADER', color: 'text-emerald-500', prices: { diesel: '$1.12', methanol: '$0.45', source: 'Ningdong Base' }, details: 'World leader in methanol utilization. Integration of coal-to-methanol pathways with carbon capture provides extreme price floor protection.' },
-            'brazil': { name: 'Brazil', reserves: '38 Days', status: 'STABLE', color: 'text-emerald-500', prices: { diesel: '$1.30', methanol: '$0.58', source: 'São Paulo Agri-Cluster' }, details: 'Leveraging existing ethanol logistics to distribute bio-methanol. Decoupling transport fuel from global Brent Crude prices.' },
-            'germany': { name: 'Germany', reserves: '22 Days', status: 'WARNING', color: 'text-yellow-500', prices: { diesel: '$1.92', methanol: '$0.88', source: 'Antwerp-Rotterdam Hub' }, details: 'Strategic pivot focused on industrial heat and heavy Rhine-river shipping. Scaling green-methanol via electrolysis.' },
-            'south-africa': { name: 'South Africa', reserves: '11 Days', status: 'CRITICAL', color: 'text-red-500', prices: { diesel: '$1.68', methanol: '$0.75', source: 'Sasolburg' }, details: 'Energy deficit resulting in severe transport rationing. Methanol seen as only viable alternative to expensive imported diesel.' },
-            'philippines': { name: 'Philippines', reserves: '12 Days', status: 'CRITICAL', color: 'text-red-500', prices: { diesel: '$1.95', methanol: '$0.82', source: 'Visayas Storage' }, details: 'Logistical chokepoints. Regional hubs in Labuan (Malaysia) now servicing Mindanao and Cebu grid feeders with methanol.' },
-            'new-zealand': { name: 'New Zealand', reserves: '9 Days', status: 'COLLAPSE RISK', color: 'text-red-600', prices: { diesel: '$3.43', methanol: '$1.25', source: 'Waitara/Motunui' }, details: 'Extreme geographic isolation. National energy security policy now mandates a 30% methanol blend for all industrial heavy haulers by year-end.' },
-            'indonesia': { name: 'Indonesia', reserves: '42 Days', status: 'STABLE', color: 'text-emerald-500', prices: { diesel: '$1.10', methanol: '$0.42', source: 'Bontang' }, details: 'Massive methanol surplus. Transitioning inter-island ferry fleets to methanol to reduce expensive central diesel subsidies.' },
-            'malaysia': { name: 'Malaysia', reserves: '55 Days', status: 'SECURE', color: 'text-emerald-400', prices: { diesel: '$0.95', methanol: '$0.38', source: 'Bintulu/Labuan' }, details: 'Leading regional bunkering node. Successfully converted 80% of government-owned support vessels to dual-fuel methanol.' },
-            'australia': { name: 'Australia', reserves: '24 Days', status: 'WARNING', color: 'text-yellow-500', prices: { diesel: '$2.20', methanol: '$0.85', source: 'Darwin Gas Hub' }, details: 'High reliance on long-haul diesel transport. Federal subsidies recently redirected to retrofitting mining fleets in the Pilbara region.' }
-        };
 
         function showDetails(key) {
             const data = globalData[key];
             const infoBox = document.getElementById('country-info');
             infoBox.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between items-start gap-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-2">
-                             <h4 class="text-3xl font-black">${data.name}</h4>
-                             <span class="text-[10px] uppercase font-black px-2 py-1 bg-blue-600 rounded">TARGET STATUS: ${data.status}</span>
-                        </div>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-6">${data.details}</p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <p class="text-[9px] text-slate-500 uppercase font-black">Strategic Supply Node</p>
-                                <p class="text-sm font-bold text-blue-400">${data.prices.source}</p>
-                            </div>
-                            <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                <p class="text-[9px] text-slate-500 uppercase font-black">Market Parity (USD/L)</p>
-                                <p class="text-sm font-bold text-white">${data.prices.diesel} Diesel | <span class="text-emerald-400">${data.prices.methanol} Methanol</span></p>
-                            </div>
-                        </div>
+                        <h4 class="text-2xl font-black mb-1">${data.name} <span class="text-xs uppercase px-2 py-1 bg-blue-600 rounded ml-2">${data.status}</span></h4>
+                        <p class="text-slate-400 text-xs">${data.details}</p>
                     </div>
-                    <div class="text-center bg-white/5 p-8 rounded-3xl border border-white/10 min-w-[220px]">
-                        <p class="text-[10px] text-slate-500 font-black uppercase mb-1">Fuel Autonomy Margin</p>
-                        <p class="text-6xl font-black ${data.color}">${data.reserves}</p>
-                        <p class="text-[9px] text-slate-400 mt-2 italic">Days of strategic fuel independence</p>
-                        <div class="w-full h-2 bg-slate-800 rounded-full mt-4 overflow-hidden">
-                            <div class="h-full ${data.color.replace('text-', 'bg-')}" style="width: ${Math.min(100, parseInt(data.reserves)*2.0)}%"></div>
-                        </div>
+                    <div class="text-center bg-white/5 p-4 rounded-xl border border-white/10 min-w-[150px]">
+                        <p class="text-[9px] text-slate-500 font-black uppercase">Fuel Margin</p>
+                        <p class="text-4xl font-black ${data.color}">${data.reserves}</p>
                     </div>
                 </div>
             `;
             infoBox.classList.remove('hidden');
-            infoBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            infoBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
+
+        function copyShareLink() {
+            const el = document.createElement('textarea');
+            el.value = window.location.href;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const toast = document.getElementById('share-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function downloadReport() {
+            alert('Intelligence packet generating. Check browser downloads.');
+        }
+
+        // Initialize first view
+        toggleView('regional');
     </script>
 </body>
 </html>
