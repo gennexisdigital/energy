@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methanol Transition Intelligence | Executive Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .dark-card {
+            background: #0f172a;
+            color: white;
+            border: 1px solid #1e293b;
+        }
+
+        .map-container {
+            position: relative;
+            background: #020617;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 550px;
+            box-shadow: inset 0 0 100px rgba(30, 58, 138, 0.2);
+        }
+
+        .country-marker {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .country-marker:hover {
+            transform: scale(1.25) translateY(-5px);
+            z-index: 50;
+        }
+
+        .marker-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .pulse-red { animation: shadow-pulse-red 2s infinite; }
+        @keyframes shadow-pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #share-toast {
+            transition: all 0.3s ease;
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        #share-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Toast Notification -->
+    <div id="share-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+        <i class="fas fa-check-circle text-green-400"></i>
+        <span id="toast-message" class="text-sm font-bold">Link copied to clipboard!</span>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="hidden lg:flex fixed left-0 top-0 h-full w-20 flex-col items-center py-8 gap-8 border-r bg-white z-50">
+        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+            <i class="fas fa-bolt text-xl"></i>
+        </div>
+        <div class="flex flex-col gap-6 text-slate-400">
+            <button class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-map-marked-alt"></i></button>
+            <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-chart-line"></i></button>
+            <button class="w-10 h-10 rounded-lg hover:bg-slate-100 transition flex items-center justify-center"><i class="fas fa-biohazard"></i></button>
+        </div>
+    </nav>
+
+    <div class="lg:ml-20">
+        <!-- Top Navigation -->
+        <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-40 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Methanol <span class="gradient-text">Pivot</span> Index</h1>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Global Diesel Scarcity Monitor 2026</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="downloadReport()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition shadow-md">
+                        <i class="fas fa-download"></i> Download Report
+                    </button>
+                    <button onclick="copyShareLink()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                    <div class="px-3 py-1.5 rounded-lg bg-red-50 border border-red-100 flex items-center gap-2 hidden sm:flex">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                        <span class="text-xs font-bold text-red-700 uppercase">Critical</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6 max-w-7xl mx-auto space-y-8">
+            
+            <!-- Global Shortage Summary Cards -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-red-500">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Avg. Diesel Reserve</p>
+                    <h3 class="text-3xl font-black text-red-600">14.2 <span class="text-sm">Days</span></h3>
+                    <p class="text-[10px] text-red-400 mt-2 font-bold"><i class="fas fa-arrow-down"></i> -4.1 Days vs Last Week</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Nations at Risk</p>
+                    <h3 class="text-3xl font-black text-orange-600">12</h3>
+                    <p class="text-[10px] text-slate-400 mt-2 font-bold">Sub-10 Day Reserves</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-green-500">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Methanol Capacity</p>
+                    <h3 class="text-3xl font-black text-green-600">92%</h3>
+                    <p class="text-[10px] text-green-500 mt-2 font-bold"><i class="fas fa-check"></i> Surplus Available</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Pivot Success Rate</p>
+                    <h3 class="text-3xl font-black text-blue-600">68%</h3>
+                    <p class="text-[10px] text-slate-400 mt-2 font-bold">In Active Conversion</p>
+                </div>
+            </section>
+
+            <!-- Main Intelligence Layout -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- The Interactive Map -->
+                    <div class="glass-panel rounded-2xl p-4 shadow-xl overflow-hidden">
+                        <div class="flex items-center justify-between mb-4 px-2">
+                            <h3 class="text-lg font-bold">Diesel Depletion Watchlist</h3>
+                            <div class="flex gap-4 text-[10px] font-bold uppercase">
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> Secure (>30d)</span>
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span> Warning (15-30d)</span>
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span> Critical (<15d)</span>
+                            </div>
+                        </div>
+
+                        <div class="map-container relative">
+                            <svg viewBox="0 0 1000 500" class="w-full h-full opacity-10" fill="#94a3b8">
+                                <path d="M150,150 Q250,150 230,350 L120,250 Z" />
+                                <path d="M250,350 L320,380 L300,480 L220,420 Z" />
+                                <path d="M480,150 L750,150 L700,300 L550,350 Z" />
+                                <path d="M480,300 L620,450 L500,450 Z" />
+                                <path d="M750,380 L920,450 L800,480 Z" />
+                            </svg>
+
+                            <div class="country-marker top-[75%] left-[82%]" onclick="showDetails('australia')">
+                                <div class="marker-dot bg-yellow-500"></div>
+                                <span class="text-[10px] text-white mt-1 font-bold bg-slate-900/80 px-2 py-0.5 rounded-full">AUSTRALIA (24d)</span>
+                            </div>
+                            <div class="country-marker top-[55%] left-[73%]" onclick="showDetails('malaysia')">
+                                <div class="marker-dot bg-green-500"></div>
+                                <span class="text-[10px] text-white mt-1 font-bold bg-slate-900/80 px-2 py-0.5 rounded-full">MALAYSIA (55d)</span>
+                            </div>
+                            <div class="country-marker top-[65%] left-[75%]" onclick="showDetails('indonesia')">
+                                <div class="marker-dot bg-green-500"></div>
+                                <span class="text-[10px] text-white mt-1 font-bold bg-slate-900/80 px-2 py-0.5 rounded-full">INDONESIA (42d)</span>
+                            </div>
+                            <div class="country-marker top-[50%] left-[78%]" onclick="showDetails('philippines')">
+                                <div class="marker-dot bg-red-500 pulse-red"></div>
+                                <span class="text-[10px] text-white mt-1 font-bold bg-slate-900/80 px-2 py-0.5 rounded-full">PHILIPPINES (12d)</span>
+                            </div>
+                            <div class="country-marker top-[85%] left-[90%]" onclick="showDetails('new-zealand')">
+                                <div class="marker-dot bg-red-500 pulse-red"></div>
+                                <span class="text-[10px] text-white mt-1 font-bold bg-slate-900/80 px-2 py-0.5 rounded-full">N. ZEALAND (9d)</span>
+                            </div>
+                        </div>
+                        
+                        <div id="country-info" class="mt-4 p-6 rounded-2xl bg-slate-900 text-white hidden border border-slate-700">
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold mb-6">National Diesel Shortage Audit</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-100">
+                                    <tr>
+                                        <th class="pb-4">Market</th>
+                                        <th class="pb-4">Diesel Price</th>
+                                        <th class="pb-4">Days Remaining</th>
+                                        <th class="pb-4">Risk Profile</th>
+                                        <th class="pb-4 text-right">Methanol Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50">
+                                    <tr>
+                                        <td class="py-4 font-bold">New Zealand</td>
+                                        <td class="py-4 text-red-600 font-bold">$3.43</td>
+                                        <td class="py-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-red-600 font-black">09d</span>
+                                                <div class="flex-1 h-1.5 bg-slate-100 rounded-full max-w-[80px] overflow-hidden">
+                                                    <div class="bg-red-500 h-full" style="width: 18%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4"><span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded">EXTREME</span></td>
+                                        <td class="py-4 text-right"><button class="text-blue-600 text-xs font-bold hover:underline">Convert Grid</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-4 font-bold">Philippines</td>
+                                        <td class="py-4 text-red-600 font-bold">$1.95</td>
+                                        <td class="py-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-red-500 font-black">12d</span>
+                                                <div class="flex-1 h-1.5 bg-slate-100 rounded-full max-w-[80px] overflow-hidden">
+                                                    <div class="bg-red-500 h-full" style="width: 24%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4"><span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded">CRITICAL</span></td>
+                                        <td class="py-4 text-right"><button class="text-blue-600 text-xs font-bold hover:underline">Deploy Tankers</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-4 font-bold">Australia</td>
+                                        <td class="py-4 font-bold">$2.20</td>
+                                        <td class="py-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-yellow-600 font-black">24d</span>
+                                                <div class="flex-1 h-1.5 bg-slate-100 rounded-full max-w-[80px] overflow-hidden">
+                                                    <div class="bg-yellow-500 h-full" style="width: 48%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4"><span class="text-[10px] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded">STRESSED</span></td>
+                                        <td class="py-4 text-right"><button class="text-blue-600 text-xs font-bold hover:underline">Mining Pivot</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-4 font-bold">Indonesia</td>
+                                        <td class="py-4 font-bold">$1.10</td>
+                                        <td class="py-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-green-600 font-black">42d</span>
+                                                <div class="flex-1 h-1.5 bg-slate-100 rounded-full max-w-[80px] overflow-hidden">
+                                                    <div class="bg-green-500 h-full" style="width: 84%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4"><span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">SECURE</span></td>
+                                        <td class="py-4 text-right"><button class="text-blue-600 text-xs font-bold hover:underline">Export Support</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="dark-card rounded-2xl p-6 shadow-2xl">
+                        <h3 class="text-lg font-bold mb-4 text-blue-400">Why the Shortage?</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Global refining constraints and naval blockades have created a <span class="text-red-400 font-bold">Diesel Supply Vacuum</span>. Countries dependent on shipping (NZ, Philippines) are at zero-reserve risk.
+                        </p>
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-red-500 font-bold">1</div>
+                                <p class="text-[11px] text-slate-300"><strong>New Zealand:</strong> Total reliance on imports. Local refining ceased in 2022. Current deficit is structural.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-red-500 font-bold">2</div>
+                                <p class="text-[11px] text-slate-300"><strong>Philippines:</strong> Archipelago logistics suffering from fuel hoarding and lack of strategic reserves.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+                        <h3 class="text-sm font-bold mb-3 uppercase tracking-wider">The Methanol Offset</h3>
+                        <p class="text-xs text-slate-600 mb-4">Methanol production (e.g. in Malaysia/Indonesia) is <span class="font-bold">unaffected</span> by diesel blockades.</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500 italic">NZ Energy Demand:</span>
+                                <span class="font-bold">100%</span>
+                            </div>
+                            <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex">
+                                <div class="bg-red-500 h-full w-[15%]" title="Remaining Diesel"></div>
+                                <div class="bg-green-500 h-full w-[85%]" title="Methanol Substitution Potential"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-red-500">DIESEL (15%)</span>
+                                <span class="text-green-600">METHANOL PIVOT (85%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-600 rounded-2xl p-6 text-white shadow-xl">
+                        <i class="fas fa-shipping-fast text-2xl mb-3"></i>
+                        <h4 class="font-bold text-sm uppercase">Emergency Logistic Flow</h4>
+                        <p class="text-xs text-blue-100 mt-2">Diverting Methanol barge traffic from Labuan to Philippines Power Hubs can extend energy survival by <span class="font-black underline">+90 Days</span> immediately.</p>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Invisible textarea for clipboard operations -->
+    <textarea id="copy-buffer" style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"></textarea>
+    <a id="download-anchor" style="display: none"></a>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById('share-toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function copyShareLink() {
+            const buffer = document.getElementById('copy-buffer');
+            // Use current URL to make it functional in the real environment
+            buffer.value = window.location.href;
+            document.body.appendChild(buffer);
+            buffer.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('Direct dashboard link copied!');
+                } else {
+                    throw new Error('Copy failed');
+                }
+            } catch (err) {
+                console.error('Copying failed', err);
+                showToast('Failed to copy link.');
+            }
+        }
+
+        function downloadReport() {
+            const reportContent = `
+METHANOL TRANSITION INTELLIGENCE REPORT
+Date: ${new Date().toLocaleDateString()}
+Status: GLOBAL DIESEL SCARCITY CRITICAL
+
+SUMMARY:
+- Average Diesel Reserve: 14.2 Days
+- Nations at Extreme Risk: 12
+- Methanol Surplus: 92% (Available for Pivot)
+
+COUNTRY DATA:
+1. New Zealand: 09 Days Remaining (EXTREME RISK)
+2. Philippines: 12 Days Remaining (CRITICAL RISK)
+3. Australia: 24 Days Remaining (WARNING)
+4. Indonesia: 42 Days Remaining (STABLE)
+5. Malaysia: 55 Days Remaining (SECURE)
+            `.trim();
+
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.getElementById('download-anchor');
+            a.href = url;
+            a.download = `Diesel_Shortage_Report.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('Report downloaded successfully!');
+        }
+
+        const countryData = {
+            'malaysia': { name: 'Malaysia', reserves: '55 Days', status: 'SECURE', color: 'text-green-500', details: 'Primary exporter. Diesel reserves are stable due to domestic refining.' },
+            'indonesia': { name: 'Indonesia', reserves: '42 Days', status: 'STABLE', color: 'text-green-500', details: 'Strong domestic production. Shortage limited to remote hubs.' },
+            'philippines': { name: 'Philippines', reserves: '12 Days', status: 'CRITICAL', color: 'text-red-500', details: 'Import dependency high. Methanol conversion urgent.' },
+            'australia': { name: 'Australia', reserves: '24 Days', status: 'WARNING', color: 'text-yellow-600', details: 'Mining supply chains stressed. Strategic reserves falling.' },
+            'new-zealand': { name: 'New Zealand', reserves: '9 Days', status: 'SYSTEMIC COLLAPSE', color: 'text-red-600', details: 'Reserves hit critical floor. No domestic refining.' }
+        };
+
+        function showDetails(key) {
+            const data = countryData[key];
+            const infoBox = document.getElementById('country-info');
+            infoBox.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h4 class="text-2xl font-black">${data.name} <span class="text-xs uppercase px-2 py-0.5 bg-red-600 rounded ml-2">${data.status}</span></h4>
+                        <p class="text-slate-400 mt-2 max-w-lg">${data.details}</p>
+                    </div>
+                    <div class="text-center bg-slate-800 p-6 rounded-2xl border border-slate-700 min-w-[200px]">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Diesel Countdown</p>
+                        <p class="text-4xl font-black ${data.color}">${data.reserves}</p>
+                    </div>
+                </div>
+            `;
+            infoBox.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>METHANOL TRANSITION INTELLIGENCE REPORT
+Date: 4/1/2026
+Status: GLOBAL DIESEL SCARCITY CRITICAL
+
+SUMMARY:
+- Average Diesel Reserve: 14.2 Days
+- Nations at Extreme Risk: 12
+- Methanol Surplus: 92% (Available for Pivot)
+
+COUNTRY DATA:
+1. New Zealand: 09 Days Remaining (EXTREME RISK)
+   Status: Systemic Collapse Threat. Structural deficit.
+   
+2. Philippines: 12 Days Remaining (CRITICAL RISK)
+   Status: Import dependency crisis. Logistics bottlenecks.
+
+3. Australia: 24 Days Remaining (WARNING)
+   Status: Mining supply chains stressed. 
+
+4. Indonesia: 42 Days Remaining (STABLE)
+   Status: High domestic refining offset.
+
+5. Malaysia: 55 Days Remaining (SECURE)
+   Status: Primary energy exporter.
+
+STRATEGIC RECOMMENDATION:
+Urgent diversion of Methanol barge traffic from SEA hubs to Pacific rim power plants. 
+Conversion of mining fleets to dual-fuel Methanol/Diesel systems recommended for Australia.
