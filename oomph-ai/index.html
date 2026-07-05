@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oomph! AI — AI Ambassadors for Customer Engagement</title>
+<meta name="description" content="Oomph! AI transforms 30 years of customer engagement expertise into intelligent AI Ambassadors that help businesses connect with customers 24/7, in 40+ languages.">
+<link rel="preload" href="fonts/bricolage-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#top">Oomph!<span class="logo-dot">AI</span></a>
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+      <a href="#solution">Solution</a>
+      <a href="#industries">Industries</a>
+      <a href="#how">How It Works</a>
+      <a href="#results">Results</a>
+      <a href="#about">About</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-ink btn-sm" href="#demo">Book a Demo</a>
+      <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">AI Ambassadors by Oomph!</p>
+        <h1 class="reveal d1">30 years of human connection.<br>Now scaled to <em>infinity.</em></h1>
+        <p class="lede reveal d2">Oomph!&nbsp;AI transforms over 30 years of customer engagement expertise into intelligent AI Ambassadors that help businesses connect with customers anytime, anywhere. We took everything we learned from three decades of human brand engagement — and digitized it.</p>
+        <div class="btn-row reveal d3">
+          <a class="btn btn-ink" href="#demo">Book a Demo</a>
+          <a class="btn btn-ghost" href="#about">See the Evolution<span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- Signature element: live multilingual ambassador terminal -->
+      <div class="terminal reveal d2" id="terminal" aria-label="Simulated AI Ambassador conversation">
+        <div class="terminal-head">
+          <span class="terminal-status"><span class="pulse-dot" aria-hidden="true"></span>Ambassador live</span>
+          <span class="terminal-lang mono" id="termLang">EN · English</span>
+        </div>
+        <div class="terminal-body">
+          <div class="msg msg-guest">
+            <span class="msg-who mono">Guest</span>
+            <p id="termGuest">Where can I get late dinner near the hotel?</p>
+          </div>
+          <div class="msg msg-amb">
+            <span class="msg-who mono">Oomph! Concierge</span>
+            <p><span id="termReply"></span><span class="caret" aria-hidden="true"></span></p>
+          </div>
+        </div>
+        <div class="terminal-rail mono" id="termRail" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats">
+    <div class="container stats-grid">
+      <div class="stat reveal"><span class="stat-num" data-count="30" data-suffix="+">0</span><span class="stat-label mono">Years of brand engagement</span></div>
+      <div class="stat reveal d1"><span class="stat-num" data-count="40" data-suffix="+">0</span><span class="stat-label mono">Languages, handled automatically</span></div>
+      <div class="stat reveal d2"><span class="stat-num">24/7</span><span class="stat-label mono">Always on, always accurate</span></div>
+      <div class="stat reveal d3"><span class="stat-num" data-count="1000" data-suffix="s">0</span><span class="stat-label mono">Promoters deployed over 3 decades</span></div>
+    </div>
+  </section>
+
+  <!-- ============ SOLUTION ============ -->
+  <section class="section" id="solution">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">The Oomph! AI Solution</p>
+        <h2 class="reveal d1">Your expertise. Your personality.<br>Your AI clone.</h2>
+        <p class="section-sub reveal d2">Oomph!&nbsp;AI is an intelligent AI Ambassador that helps businesses engage, inform, and assist customers — 24/7, across industries, in multiple languages. Interactive AI brand representatives that combine human-like interaction with the scalability and intelligence of artificial intelligence — accessible to every business, everywhere.</p>
+      </div>
+
+      <div class="rotator reveal" aria-live="polite">
+        <span class="rotator-fixed">Your best</span>
+        <span class="rotator-word" id="rotWord">concierge</span>
+        <span class="rotator-fixed">, <span id="rotTail">for every guest</span></span>
+        <span class="rotator-industry mono" id="rotInd">Hospitality</span>
+      </div>
+
+      <div class="cards-4">
+        <article class="card reveal">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <h3>Always on, always accurate</h3>
+          <p>Accurate product information, recommendations, and answers around the clock — without expanding headcount.</p>
+        </article>
+        <article class="card reveal d1">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><path d="M17 15l3 3-3 3"/></svg>
+          <h3>Universal communication</h3>
+          <p>Support for 40+ languages, handled automatically — no awkward hand-offs, no waiting for a translator.</p>
+        </article>
+        <article class="card reveal d2">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+          <h3>Actionable intelligence</h3>
+          <p>See exactly what customers ask, which languages dominate your floor, and which products generate the most interest — insight your human team alone could never capture at scale.</p>
+        </article>
+        <article class="card reveal d3">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <h3>Ready to scale</h3>
+          <p>Deploy your AI Ambassador across one location or hundreds, while maintaining the same quality of customer experience everywhere.</p>
+        </article>
+      </div>
+
+      <div class="center reveal">
+        <a class="btn btn-ink" href="#demo">Interview Your Next Ambassador</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INDUSTRIES ============ -->
+  <section class="section section-stone" id="industries">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">Industries</p>
+        <h2 class="reveal d1">Industry-agnostic by design.</h2>
+        <p class="section-sub reveal d2">From retail and real estate to healthcare, hospitality, education, finance, and government — Oomph!&nbsp;AI adapts to your business and your brand voice.</p>
+      </div>
+      <div class="ind-grid">
+        <article class="ind-tile reveal"><h3>Hospitality &amp; Hotels</h3><p class="ind-roles mono">Concierge · Guest host · Wayfinding guide</p><p>Your best concierge, for every guest — covering nights, weekends, and 24/7 demand.</p><a href="#demo" class="ind-link">See Hospitality solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d1"><h3>Retail &amp; Luxury</h3><p class="ind-roles mono">Brand ambassador · Product expert · Promoter</p><p>Your best salesperson, in every store — consistent engagement at every counter.</p><a href="#demo" class="ind-link">See Retail solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d2"><h3>Healthcare &amp; Wellness</h3><p class="ind-roles mono">Health guide · Patient concierge · Advisor</p><p>Your best advisor, for every patient — clear guidance in the language they speak.</p><a href="#demo" class="ind-link">See Healthcare solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal"><h3>Financial Services</h3><p class="ind-roles mono">Product guide · Onboarding host · Advisor concierge</p><p>Accurate product guidance and onboarding, delivered consistently at scale.</p><a href="#demo" class="ind-link">See Finance solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d1"><h3>Real Estate</h3><p class="ind-roles mono">Property consultant · Showroom host</p><p>Your best consultant, for every buyer — every showroom staffed, every time.</p><a href="#demo" class="ind-link">See Real Estate solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d2"><h3>Exhibitions &amp; Events</h3><p class="ind-roles mono">Promoter · Booth host · Lead capturer</p><p>Your best promoter, at every booth — never tired, never off-message.</p><a href="#demo" class="ind-link">See Events solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal"><h3>Education &amp; EdTech</h3><p class="ind-roles mono">Academic advisor · Course guide · Career coach</p><p>Your best counsellor, for every student — guidance that scales with enrolment.</p><a href="#demo" class="ind-link">See Education solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d1"><h3>Government</h3><p class="ind-roles mono">Information officer · Citizen services guide</p><p>Your best information officer, for every citizen — accessible public service.</p><a href="#demo" class="ind-link">See Government solutions<span class="arrow">→</span></a></article>
+        <article class="ind-tile reveal d2"><h3>Airports &amp; Transport</h3><p class="ind-roles mono">Wayfinding host · Info concierge · Promoter</p><p>Directions, schedules, and answers for travellers in any language, at any hour.</p><a href="#demo" class="ind-link">See Transport solutions<span class="arrow">→</span></a></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">How It Works</p>
+        <h2 class="reveal d1">From your best person<br>to your AI Ambassador.</h2>
+      </div>
+      <ol class="steps">
+        <li class="step reveal"><span class="step-num mono">01</span><h3>Capture your expertise</h3><p>We work with your team to capture the product knowledge, service standards, and brand voice your best people already carry.</p></li>
+        <li class="step reveal d1"><span class="step-num mono">02</span><h3>Design your Ambassador</h3><p>Personality, appearance, languages, and role — a brand representative built for your floor, your booth, or your lobby.</p></li>
+        <li class="step reveal d2"><span class="step-num mono">03</span><h3>Deploy anywhere</h3><p>One location or hundreds — kiosks, screens, and displays, live in weeks, with the same quality of experience everywhere.</p></li>
+        <li class="step reveal d3"><span class="step-num mono">04</span><h3>Learn and improve</h3><p>The dashboard shows what customers ask, in which languages, about which products — so every deployment gets sharper.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="section section-stone" id="results">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">Proven Results</p>
+        <h2 class="reveal d1">Show it works. Don't just claim it.</h2>
+        <p class="section-sub reveal d2 mono-note">Illustrative deployment scenarios — replace with live case studies as they are approved for publication.</p>
+      </div>
+      <div class="cases">
+        <article class="case reveal">
+          <p class="case-tag mono">Hospitality</p>
+          <h3>The lobby that never closes</h3>
+          <p>A hotel concierge Ambassador covering nights and weekends, answering guest questions in the guest's own language — no extra headcount on the night shift.</p>
+          <p class="case-metric"><strong>24/7</strong> guest coverage · <strong>40+</strong> languages</p>
+        </article>
+        <article class="case reveal d1">
+          <p class="case-tag mono">Retail</p>
+          <h3>Every counter, on-message</h3>
+          <p>A product-expert Ambassador delivering the same launch pitch at every store — while the dashboard reveals which products customers actually ask about.</p>
+          <p class="case-metric"><strong>100%</strong> message consistency · every store</p>
+        </article>
+        <article class="case reveal d2">
+          <p class="case-tag mono">Exhibitions</p>
+          <h3>The booth that works the whole show</h3>
+          <p>A promoter Ambassador that engages every visitor, qualifies interest, and never loses its voice by day three of the exhibition.</p>
+          <p class="case-metric"><strong>Every visitor</strong> greeted · zero fatigue</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY / ROI ============ -->
+  <section class="section" id="why">
+    <div class="container why-grid">
+      <div class="why-copy">
+        <p class="eyebrow reveal">Why Choose Us — ROI</p>
+        <h2 class="reveal d1">Scale customer engagement without scaling manpower.</h2>
+        <p class="reveal d2">Businesses come to us facing the same growing challenges: hiring difficulties, rising labour costs, high staff turnover, limited operating hours, and language barriers that turn away international customers. Oomph!&nbsp;AI is designed to solve exactly these.</p>
+        <p class="reveal d2"><strong>Human-first, always.</strong> We believe AI should support people, not replace them. Oomph!&nbsp;AI extends your best people's reach; it doesn't erase their jobs.</p>
+        <div class="reveal d3"><a class="btn btn-ink" href="#demo">Get a tailored ROI estimate</a></div>
+      </div>
+      <div class="roi-table reveal d2" role="table" aria-label="Staffing compared with Oomph! AI Ambassador">
+        <div class="roi-row roi-head" role="row"><span role="columnheader">The challenge</span><span role="columnheader">With Oomph! AI</span></div>
+        <div class="roi-row" role="row"><span role="cell">Shrinking talent pool, hard hiring</span><span role="cell">Deploys in weeks, no recruitment cycle</span></div>
+        <div class="roi-row" role="row"><span role="cell">Rising labour costs per location</span><span role="cell">One Ambassador, unlimited locations</span></div>
+        <div class="roi-row" role="row"><span role="cell">High staff turnover, retraining</span><span role="cell">Knowledge captured once, never lost</span></div>
+        <div class="roi-row" role="row"><span role="cell">No cover for nights &amp; weekends</span><span role="cell">24/7 presence, no overtime</span></div>
+        <div class="roi-row" role="row"><span role="cell">Language barriers at the counter</span><span role="cell">40+ languages, automatically</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT / STORY ============ -->
+  <section class="section section-stone" id="about">
+    <div class="container story-grid">
+      <div class="story-rail" aria-hidden="true">
+        <span class="story-year mono">1990s</span>
+        <span class="story-line"></span>
+        <span class="story-year mono">Today</span>
+      </div>
+      <div class="story-copy">
+        <p class="eyebrow reveal">Our Story — The Evolution</p>
+        <h2 class="reveal d1">We didn't start with AI.<br>We started with people.</h2>
+        <p class="reveal d2">For more than three decades, we've worked alongside brands, deploying thousands of promoters and brand ambassadors across countless campaigns and events. That journey gave us something technology alone never could — a real understanding of how people connect with customers.</p>
+        <p class="reveal d2">Over the years, we saw businesses facing the same growing challenges, again and again. We knew there had to be a better way. So we built one.</p>
+        <p class="reveal d2">Oomph!&nbsp;AI combines decades of real customer engagement expertise with artificial intelligence, helping businesses extend the reach of their best people while keeping the human touch that matters most. Our AI is built on decades of real-world experience serving customers across industries — <strong>not a generic chatbot trained on the open internet.</strong></p>
+        <p class="story-tagline reveal d3">Human Presence. AI Intelligence. Unlimited Scale.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq">
+    <div class="container faq-wrap">
+      <div class="section-head">
+        <p class="eyebrow reveal">FAQ</p>
+        <h2 class="reveal d1">Questions, answered.</h2>
+      </div>
+      <div class="faq-list reveal d2">
+        <details class="faq-item">
+          <summary>What exactly is an AI Ambassador?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>An interactive AI brand representative — a digital version of your best concierge, salesperson, or promoter. It greets customers, answers questions, recommends products, and guides people, on screens and kiosks in your physical spaces, 24/7.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How is this different from a chatbot?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>A chatbot is a text box. An AI Ambassador is a presence: a face, a voice, and a personality built on your brand — trained on your products and service standards, not the open internet, and designed for face-to-face customer engagement.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Which languages does it support?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>40+ languages, handled automatically. The Ambassador detects and responds in the customer's language — no hand-offs, no waiting for a translator.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Will it replace my staff?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>No — and that's a principle, not a footnote. We believe AI should support people, not replace them. Oomph! AI covers the hours and languages your team can't, and hands the moments that matter to your people.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How long does deployment take?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>Typically weeks, not months: we capture your expertise, design the Ambassador, and deploy to your locations — one or hundreds — with the same quality everywhere.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What insight do I get from it?<span class="faq-x" aria-hidden="true"></span></summary>
+          <p>The dashboard shows exactly what customers ask, which languages dominate your floor, and which products or services generate the most interest — insight your human team alone could never capture at scale.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO / CONTACT ============ -->
+  <section class="section section-ink" id="demo">
+    <div class="container demo-grid">
+      <div class="demo-copy">
+        <p class="eyebrow eyebrow-light reveal">Book a Demo</p>
+        <h2 class="reveal d1">Interview your<br>next Ambassador.</h2>
+        <p class="reveal d2">See a live AI Ambassador built for your industry, ask it the questions your customers ask, and get a tailored deployment and ROI plan.</p>
+        <p class="demo-alt reveal d3 mono">Prefer email? <a href="mailto:contact@gennexisdigital.com">contact@gennexisdigital.com</a></p>
+      </div>
+      <!-- Front-end only: submit composes an email. Wire to your form backend (e.g. Formspree) by replacing the JS handler. -->
+      <form class="demo-form reveal d2" id="demoForm" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="fName">Name</label>
+            <input id="fName" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="fCompany">Company</label>
+            <input id="fCompany" name="company" type="text" autocomplete="organization" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fEmail">Work email</label>
+          <input id="fEmail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="fIndustry">Industry</label>
+          <select id="fIndustry" name="industry">
+            <option>Hospitality &amp; Hotels</option><option>Retail &amp; Luxury</option><option>Healthcare &amp; Wellness</option><option>Financial Services</option><option>Real Estate</option><option>Exhibitions &amp; Events</option><option>Education &amp; EdTech</option><option>Government</option><option>Airports &amp; Transport</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fMsg">What would your Ambassador do? <span class="optional mono">optional</span></label>
+          <textarea id="fMsg" name="message" rows="3" placeholder="e.g. Greet guests and handle late-night questions in our hotel lobby"></textarea>
+        </div>
+        <button class="btn btn-paper btn-full" type="submit">Book a Demo</button>
+        <p class="form-note mono" id="formNote" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <p class="logo logo-foot">Oomph!<span class="logo-dot">AI</span></p>
+      <p class="footer-tag">Your expertise. Your personality. Your AI clone.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#solution">Solution</a>
+      <a href="#industries">Industries</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">About</a>
+      <a href="#demo">Book a Demo</a>
+    </nav>
+    <p class="footer-fine mono">© <span id="year">2026</span> Oomph! AI · AI Ambassadors for customer engagement</p>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>
