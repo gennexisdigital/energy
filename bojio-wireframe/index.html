@@ -63,7 +63,55 @@
     background: #0B0B0F; border-radius: 54px; padding: 12px;
     box-shadow: 0 24px 60px rgba(17,24,39,.35), inset 0 0 0 2px #3A3A42;
     position: relative; flex-shrink: 0;
+    transition: width .3s ease, height .3s ease, border-radius .3s ease, background .3s ease, padding .3s ease;
   }
+
+  /* ===== Buddy Box rectangular device frame ===== */
+  .iphone.bbdevice {
+    width: 760px; height: 540px; border-radius: 30px; padding: 22px;
+    background: linear-gradient(165deg, #F7F0DF 0%, #EFE4CC 100%);
+    box-shadow: 0 24px 60px rgba(120,90,40,.30), inset 0 0 0 2px #E2D3B4, inset 0 -6px 12px rgba(120,90,40,.15);
+  }
+  .iphone.bbdevice .screen { border-radius: 14px; border: 2px solid #D9C9A8; }
+  .iphone.bbdevice .dynamic-island, .iphone.bbdevice .home-indicator, .iphone.bbdevice .statusbar { display: none; }
+  .iphone.bbdevice::after {
+    content: ""; position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+    width: 7px; height: 7px; border-radius: 50%; background: #C9B892;
+  }
+  .iphone.bbdevice::before {
+    content: ""; position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4B5563; box-shadow: inset 0 0 0 2px #9CA3AF; z-index: 61;
+  }
+
+  /* Wider layouts inside the Buddy Box screen */
+  .bbdevice .bb-grid { grid-template-columns: repeat(3, 1fr); max-width: 640px; margin: 0 auto; }
+  .bbdevice .bb-head { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .bbdevice .bb-btn { padding: 16px 10px 14px; }
+  .bbdevice .bb-btn .ic { font-size: 26px; margin-bottom: 6px; }
+  .bbdevice .contact-grid { max-width: 520px; margin: 0 auto; }
+  .bbdevice .wide-btn { max-width: 520px; margin-left: auto; margin-right: auto; }
+  .bbdevice .mood-grid { grid-template-columns: repeat(4, 1fr); max-width: 660px; margin: 0 auto; }
+  .bbdevice .mood-opt { padding: 14px 8px 12px; }
+  .bbdevice .mood-opt .fc { font-size: 32px; }
+  .bbdevice .mood-note { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .bbdevice .health-card { max-width: 520px; margin-left: auto; margin-right: auto; padding: 16px 18px; }
+  .bbdevice .health-card .em { font-size: 34px; }
+  .bbdevice .btn-done { margin-top: 12px; }
+  .bbdevice .sos-card { max-width: 560px; margin-left: auto; margin-right: auto; }
+  .bbdevice .sos-actions { max-width: 560px; margin: 0 auto; padding: 0; }
+  .bbdevice .act-card { max-width: 560px; margin-left: auto; margin-right: auto; }
+  .bbdevice .vol-hero { max-width: 560px; margin-left: auto; margin-right: auto; }
+  .bbdevice .big-action { max-width: 400px; margin-left: auto; margin-right: auto; }
+  .bbdevice .calling-wrap { padding-top: 10px; }
+  .bbdevice .pulse-ring { width: 120px; height: 120px; }
+  .bbdevice .calling-wrap .who { margin-top: 14px; }
+  .bbdevice .btn-end { margin-top: 16px; }
+  .bbdevice .thanks { padding-top: 14px; }
+  .bbdevice .thanks .em { font-size: 44px; }
+  .bbdevice .thanks .t { margin-top: 8px; }
+  .bbdevice .btn-home { margin-top: 16px; }
+  .bbdevice .toast { bottom: 26px; }
   .screen {
     width: 100%; height: 100%; background: var(--bg); border-radius: 42px;
     overflow: hidden; position: relative; display: flex; flex-direction: column;
@@ -436,6 +484,12 @@
     .screen { border-radius: 0; }
     .dynamic-island { display: none; }
   }
+  @media (max-width: 800px) {
+    .iphone.bbdevice { width: 100vw; height: 78vh; border-radius: 0; padding: 10px; }
+    .iphone.bbdevice::before, .iphone.bbdevice::after { display: none; }
+    .bbdevice .bb-grid { grid-template-columns: repeat(2, 1fr); }
+    .bbdevice .mood-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
@@ -447,10 +501,10 @@
     <button id="modeVol" class="active" onclick="setMode('vol')">📱 Volunteer App</button>
     <button id="modeBb" onclick="setMode('bb')">👵 Senior Buddy Box</button>
   </div>
-  <div class="hint">Everything inside the phone is tappable — tabs, chips, buttons, list rows.</div>
+  <div class="hint" id="hint">Everything inside the phone is tappable — tabs, chips, buttons, list rows.</div>
 </div>
 
-<div class="iphone">
+<div class="iphone" id="device">
   <div class="dynamic-island"></div>
   <div class="screen">
     <div class="statusbar"><span>9:41</span><span class="icons">▮▮▮ 📶 🔋</span></div>
@@ -905,6 +959,10 @@
     history = [];
     document.getElementById('modeVol').classList.toggle('active', mode === 'vol');
     document.getElementById('modeBb').classList.toggle('active', mode === 'bb');
+    document.getElementById('device').classList.toggle('bbdevice', mode === 'bb');
+    document.getElementById('hint').textContent = mode === 'bb'
+      ? 'The Buddy Box is a rectangular one-touch tabletop device — every big button is tappable.'
+      : 'Everything inside the phone is tappable — tabs, chips, buttons, list rows.';
     go(mode === 'vol' ? 'v-home' : 'b-home', mode === 'vol' ? 'home' : null);
     history = [];
   }
