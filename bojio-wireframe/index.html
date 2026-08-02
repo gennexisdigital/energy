@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Don't Say Bojio! — Interactive iPhone Wireframe</title>
+<style>
+  :root {
+    --purple: #5B21B6;
+    --purple-mid: #6D28D9;
+    --purple-soft: #EDE9FE;
+    --red: #DC2626;
+    --red-soft: #FEE2E2;
+    --green: #16A34A;
+    --green-soft: #DCFCE7;
+    --amber: #F59E0B;
+    --amber-soft: #FEF3C7;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --teal: #0D9488;
+    --teal-soft: #CCFBF1;
+    --ink: #1F2937;
+    --muted: #6B7280;
+    --line: #E5E7EB;
+    --bg: #F7F7FA;
+    --card: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(160deg, #ECE8F7 0%, #FDF6EC 55%, #F3EEFB 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    color: var(--ink);
+  }
+
+  /* ===== Page header & mode toggle ===== */
+  .page-head { text-align: center; margin-bottom: 20px; }
+  .page-head .logo {
+    font-size: 30px; font-weight: 900; letter-spacing: -0.5px;
+    color: #111827;
+    text-shadow: 2px 2px 0 #FDE68A;
+  }
+  .page-head .logo span { color: var(--purple-mid); }
+  .page-head .tagline { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .mode-toggle {
+    display: inline-flex; margin-top: 14px; background: #fff; border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px; box-shadow: 0 4px 14px rgba(17,24,39,.08);
+  }
+  .mode-toggle button {
+    border: 0; background: transparent; padding: 9px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .18s;
+  }
+  .mode-toggle button.active { background: var(--purple-mid); color: #fff; box-shadow: 0 2px 8px rgba(109,40,217,.35); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  /* ===== iPhone frame ===== */
+  .iphone {
+    width: 393px; max-width: 100vw; height: 812px;
+    background: #0B0B0F; border-radius: 54px; padding: 12px;
+    box-shadow: 0 24px 60px rgba(17,24,39,.35), inset 0 0 0 2px #3A3A42;
+    position: relative; flex-shrink: 0;
+  }
+  .screen {
+    width: 100%; height: 100%; background: var(--bg); border-radius: 42px;
+    overflow: hidden; position: relative; display: flex; flex-direction: column;
+  }
+  .dynamic-island {
+    position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+    width: 118px; height: 32px; background: #0B0B0F; border-radius: 20px; z-index: 60;
+  }
+  .statusbar {
+    height: 54px; display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 28px 6px; font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .statusbar .icons { display: flex; gap: 5px; align-items: center; font-size: 12px; }
+  .home-indicator {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 134px; height: 5px; border-radius: 3px; background: #111; opacity: .85; z-index: 60;
+  }
+
+  /* ===== Screen router ===== */
+  .view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .view.active { display: flex; animation: fadein .18s ease; }
+  @keyframes fadein { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .scroll { flex: 1; overflow-y: auto; padding: 0 16px 16px; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ===== Shared header bar ===== */
+  .navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px 12px; flex-shrink: 0;
+  }
+  .navbar .title { font-size: 17px; font-weight: 800; }
+  .back-btn {
+    border: 0; background: transparent; font-size: 22px; line-height: 1;
+    cursor: pointer; color: var(--ink); padding: 4px 8px 4px 0; font-weight: 600;
+  }
+  .link-btn { border: 0; background: none; color: var(--purple-mid); font-size: 13px; font-weight: 700; cursor: pointer; }
+
+  /* ===== Volunteer: cards & widgets ===== */
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .vol-hello .logo-sm { font-size: 24px; font-weight: 900; text-shadow: 1.5px 1.5px 0 #FDE68A; }
+  .vol-hello h1 { font-size: 22px; font-weight: 800; margin-top: 10px; }
+  .vol-hello p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .bell {
+    position: relative; width: 40px; height: 40px; border-radius: 50%;
+    background: #fff; border: 1px solid var(--line); display: flex;
+    align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
+  }
+  .bell .dot {
+    position: absolute; top: -3px; right: -3px; background: var(--red); color: #fff;
+    font-size: 10px; font-weight: 800; min-width: 17px; height: 17px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center; padding: 0 3px;
+  }
+  .overview-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .overview-head .t { font-size: 15px; font-weight: 800; color: var(--purple-mid); }
+  .overview-head .d { font-size: 12px; color: var(--muted); }
+  .stats { display: flex; }
+  .stat { flex: 1; text-align: center; padding: 0 4px; }
+  .stat + .stat { border-left: 1px solid var(--line); }
+  .stat .ico {
+    width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .stat .num { font-size: 24px; font-weight: 800; }
+  .stat .lbl { font-size: 11.5px; font-weight: 700; margin-top: 2px; }
+  .stat .sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+
+  .urgent { border: 1px solid #FECACA; background: #FFF5F5; }
+  .urgent .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .urgent .head .t { color: var(--red); font-size: 15px; font-weight: 800; }
+  .urgent-row {
+    display: flex; align-items: center; gap: 10px; background: #fff;
+    border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin-top: 8px;
+  }
+  .urgent-row .who { flex: 1; min-width: 0; }
+  .urgent-row .who .n { font-size: 14px; font-weight: 800; }
+  .urgent-row .who .m { font-size: 12px; color: var(--muted); }
+  .urgent-row .time { font-size: 11px; color: var(--muted); }
+  .btn-call {
+    border: 0; background: var(--red); color: #fff; font-size: 12px; font-weight: 800;
+    padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  }
+
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: #fff;
+  }
+  .avatar.lg { width: 72px; height: 72px; font-size: 24px; }
+  .badge-ico {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+
+  /* Filter chips */
+  .chips { display: flex; gap: 8px; padding: 4px 16px 12px; flex-wrap: wrap; flex-shrink: 0; }
+  .chip {
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    font-size: 12.5px; font-weight: 700; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  }
+  .chip.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+  /* List rows */
+  .row {
+    display: flex; align-items: center; gap: 12px; background: #fff;
+    border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .row .info { flex: 1; min-width: 0; }
+  .row .info .n { font-size: 14.5px; font-weight: 800; }
+  .row .info .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .mood-pill {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800;
+    padding: 4px 10px; border-radius: 999px; margin-top: 6px;
+  }
+  .mood-lonely { background: var(--red-soft); color: var(--red); }
+  .mood-okay { background: var(--amber-soft); color: #B45309; }
+  .mood-happy { background: var(--green-soft); color: var(--green); }
+  .btn-connect {
+    border: 1.5px solid var(--purple-mid); background: #fff; color: var(--purple-mid);
+    font-size: 12px; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer;
+  }
+  .btn-connect:active { background: var(--purple-soft); }
+  .status-pill { font-size: 11.5px; font-weight: 800; padding: 5px 10px; border-radius: 8px; }
+  .st-done { background: var(--green-soft); color: var(--green); }
+  .st-progress { background: var(--red-soft); color: var(--red); }
+  .chev { color: #C4C4CC; font-size: 18px; font-weight: 700; }
+
+  /* Day strip */
+  .daystrip { display: flex; gap: 6px; padding: 4px 16px 14px; flex-shrink: 0; }
+  .day {
+    flex: 1; text-align: center; padding: 8px 0 10px; border-radius: 14px; cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .day .dw { font-size: 11px; color: var(--muted); font-weight: 700; }
+  .day .dn { font-size: 15px; font-weight: 800; margin-top: 3px; }
+  .day.active { background: var(--purple); }
+  .day.active .dw, .day.active .dn { color: #fff; }
+
+  .activity {
+    display: flex; gap: 12px; background: #fff; border: 1px solid var(--line);
+    border-radius: 18px; padding: 14px; margin-bottom: 12px;
+  }
+  .activity .thumb {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+  .activity .body { flex: 1; }
+  .activity .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .activity .t { font-size: 15px; font-weight: 800; }
+  .activity .tagline { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .activity .meta { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+  .count-pill { background: var(--green-soft); color: var(--green); font-size: 10.5px; font-weight: 800; padding: 4px 8px; border-radius: 999px; white-space: nowrap; }
+
+  /* Profile */
+  .profile-card { text-align: center; padding: 22px 16px 18px; }
+  .profile-card .n { font-size: 20px; font-weight: 800; margin-top: 10px; }
+  .profile-card .meta { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.6; }
+  .tabs { display: flex; gap: 8px; padding: 2px 16px 14px; flex-shrink: 0; }
+  .tab {
+    flex: 1; border: 1px solid var(--line); background: #fff; font-size: 12.5px; font-weight: 800;
+    padding: 9px 0; border-radius: 12px; cursor: pointer; color: var(--muted);
+  }
+  .tab.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .prow {
+    display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px; margin-bottom: 10px; cursor: pointer;
+  }
+  .prow .pi {
+    width: 40px; height: 40px; border-radius: 12px; background: var(--purple-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .prow .pt { flex: 1; }
+  .prow .pt .a { font-size: 13.5px; font-weight: 800; }
+  .prow .pt .b { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .mood-hist { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .mood-hist .d { font-size: 12px; color: var(--muted); flex: 1; }
+  .note { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+  .note .who { font-size: 11px; font-weight: 800; color: #92400E; }
+  .note .txt { font-size: 13px; margin-top: 4px; }
+
+  /* Tab bar */
+  .tabbar {
+    display: flex; border-top: 1px solid var(--line); background: #fff;
+    padding: 8px 6px 26px; flex-shrink: 0;
+  }
+  .tb {
+    flex: 1; border: 0; background: none; cursor: pointer; text-align: center;
+    color: #9CA3AF; font-size: 10px; font-weight: 700;
+  }
+  .tb .i {
+    font-size: 20px; display: block; margin: 0 auto 3px; width: 46px; height: 32px;
+    line-height: 32px; border-radius: 16px;
+  }
+  .tb.active { color: var(--purple-mid); }
+  .tb.active .i { background: var(--purple); color: #fff; }
+
+  /* Seniors directory */
+  .search {
+    display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line);
+    border-radius: 14px; padding: 10px 14px; margin: 4px 16px 12px; font-size: 13px; color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* ===== Buddy Box (senior mode) ===== */
+  .bb-head {
+    display: flex; align-items: center; gap: 12px; background: #fff;
+    border: 1.5px solid var(--line); border-radius: 18px; padding: 14px; margin: 4px 16px 14px;
+    flex-shrink: 0;
+  }
+  .bb-head .msg { font-size: 16.5px; font-weight: 800; line-height: 1.35; }
+  .bb-head .msg small { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+  .bb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .bb-btn {
+    border: 0; border-radius: 20px; padding: 20px 10px 16px; cursor: pointer; color: #fff;
+    text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,.16); transition: transform .08s;
+  }
+  .bb-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.16); }
+  .bb-btn .ic { font-size: 30px; display: block; margin-bottom: 8px; }
+  .bb-btn .tx { font-size: 15px; font-weight: 800; line-height: 1.25; }
+  .bb-green { background: #22A34A; }
+  .bb-orange { background: #F59E0B; }
+  .bb-blue { background: #2563EB; }
+  .bb-purple { background: #7C3AED; }
+  .bb-teal { background: #0D9488; }
+  .bb-red { background: #DC2626; }
+  .bb-footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 16px 24px 8px; font-weight: 700; }
+
+  .bb-title {
+    text-align: center; font-size: 19px; font-weight: 900; padding: 2px 16px 4px;
+  }
+  .bb-sub { text-align: center; font-size: 13.5px; color: var(--muted); padding: 0 26px 14px; line-height: 1.5; }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 0 16px; }
+  .contact {
+    background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 18px; padding: 16px 6px;
+    text-align: center; cursor: pointer;
+  }
+  .contact:active { background: #DCFCE7; }
+  .contact .av { margin: 0 auto 8px; }
+  .contact .n { font-size: 13.5px; font-weight: 800; }
+  .contact .ph { font-size: 18px; margin-top: 6px; }
+  .wide-btn {
+    display: block; width: calc(100% - 32px); margin: 12px 16px 0; border: 1.5px solid var(--line);
+    background: #fff; border-radius: 16px; padding: 14px; font-size: 14.5px; font-weight: 800;
+    cursor: pointer; text-align: center; color: var(--ink);
+  }
+
+  .calling-wrap { text-align: center; padding: 26px 24px 0; }
+  .pulse-ring {
+    width: 148px; height: 148px; border-radius: 50%; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .pulse-ring::before, .pulse-ring::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    border: 3px solid #86EFAC; animation: pulse 1.6s ease-out infinite;
+  }
+  .pulse-ring::after { animation-delay: .8s; }
+  @keyframes pulse { 0% { transform: scale(.85); opacity: 1; } 100% { transform: scale(1.25); opacity: 0; } }
+  .calling-wrap .who { font-size: 21px; font-weight: 900; margin-top: 22px; }
+  .calling-wrap .st { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .btn-end {
+    display: inline-block; border: 0; background: var(--red); color: #fff; font-size: 16px;
+    font-weight: 800; padding: 15px 42px; border-radius: 999px; cursor: pointer; margin-top: 30px;
+    box-shadow: 0 4px 0 rgba(0,0,0,.18);
+  }
+
+  .vol-hero {
+    display: flex; align-items: center; gap: 14px; background: #FFFBEB; border: 1.5px solid #FDE68A;
+    border-radius: 18px; padding: 16px; margin: 0 16px 14px;
+  }
+  .vol-hero .bubble { font-size: 14px; font-weight: 800; line-height: 1.4; }
+  .big-action {
+    display: flex; align-items: center; gap: 12px; width: calc(100% - 32px); margin: 0 16px 12px;
+    border: 0; border-radius: 18px; padding: 18px; cursor: pointer; color: #fff;
+    font-size: 16.5px; font-weight: 800; box-shadow: 0 4px 0 rgba(0,0,0,.16); text-align: left;
+  }
+  .big-action .ic { font-size: 24px; }
+  .big-action:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.16); }
+
+  .act-card {
+    background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 18px; padding: 14px;
+    margin: 0 16px 10px; display: flex; align-items: center; gap: 12px;
+  }
+  .act-card .em { font-size: 28px; }
+  .act-card .b { flex: 1; }
+  .act-card .t { font-size: 15px; font-weight: 800; }
+  .act-card .w { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .btn-join {
+    border: 0; background: var(--blue); color: #fff; font-size: 13px; font-weight: 800;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer;
+  }
+  .btn-join.joined { background: var(--green); }
+
+  .mood-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .mood-opt {
+    border: 2px solid transparent; border-radius: 20px; padding: 20px 10px 16px; cursor: pointer;
+    text-align: center;
+  }
+  .mood-opt .fc { font-size: 40px; }
+  .mood-opt .t { font-size: 15.5px; font-weight: 900; margin-top: 8px; }
+  .mood-opt .s { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 600; }
+  .mo-happy { background: #F0FDF4; } .mo-happy .t { color: var(--green); }
+  .mo-okay { background: #FFFBEB; } .mo-okay .t { color: #B45309; }
+  .mo-lonely { background: #FFF7ED; } .mo-lonely .t { color: #EA580C; }
+  .mo-help { background: #FEF2F2; } .mo-help .t { color: var(--red); }
+  .mood-opt.selected { border-color: var(--purple-mid); box-shadow: 0 0 0 3px var(--purple-soft); }
+  .mood-note {
+    margin: 14px 16px 0; background: #F5F3FF; border-radius: 14px; padding: 12px;
+    font-size: 12.5px; color: var(--purple-mid); text-align: center; font-weight: 700;
+  }
+
+  .health-card {
+    background: #F0FDFA; border: 1.5px solid #99F6E4; border-radius: 20px; padding: 22px 18px;
+    margin: 6px 16px 0; text-align: center;
+  }
+  .health-card .em { font-size: 44px; }
+  .health-card .t { font-size: 18px; font-weight: 900; margin-top: 10px; }
+  .health-card .s { font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .btn-done {
+    border: 0; background: var(--teal); color: #fff; font-size: 15px; font-weight: 800;
+    padding: 14px 40px; border-radius: 999px; cursor: pointer; margin-top: 18px;
+    box-shadow: 0 4px 0 rgba(0,0,0,.16);
+  }
+
+  .sos-card {
+    background: #FEF2F2; border: 2px solid #FECACA; border-radius: 20px; padding: 20px 16px;
+    margin: 6px 16px 14px; display: flex; gap: 14px; align-items: center;
+  }
+  .sos-badge {
+    width: 66px; height: 66px; border-radius: 50%; background: var(--red); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900;
+    flex-shrink: 0; box-shadow: 0 0 0 6px #FECACA;
+  }
+  .sos-card .t { font-size: 16.5px; font-weight: 900; }
+  .sos-card .s { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .sos-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .sos-actions button {
+    border: 0; border-radius: 16px; padding: 16px 8px; cursor: pointer; font-weight: 800;
+    font-size: 14.5px; line-height: 1.3; box-shadow: 0 4px 0 rgba(0,0,0,.14);
+  }
+  .sos-actions button small { display: block; font-size: 11.5px; font-weight: 700; margin-top: 3px; opacity: .85; }
+  .btn-okay { background: #FCE7E9; color: var(--red); }
+  .btn-sos-go { background: var(--red); color: #fff; }
+
+  .thanks { text-align: center; padding: 34px 26px 0; }
+  .thanks .em { font-size: 56px; }
+  .thanks .t { font-size: 24px; font-weight: 900; margin-top: 14px; }
+  .thanks .s { font-size: 14.5px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .btn-home {
+    border: 0; background: var(--purple-mid); color: #fff; font-size: 15px; font-weight: 800;
+    padding: 14px 36px; border-radius: 999px; cursor: pointer; margin-top: 26px;
+    box-shadow: 0 4px 0 rgba(0,0,0,.18);
+  }
+
+  /* Toast */
+  .toast {
+    position: absolute; left: 50%; bottom: 110px; transform: translateX(-50%) translateY(16px);
+    background: #111827; color: #fff; font-size: 12.5px; font-weight: 700;
+    padding: 10px 18px; border-radius: 999px; opacity: 0; pointer-events: none;
+    transition: all .25s; z-index: 70; white-space: nowrap; max-width: 90%;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 430px) {
+    body { padding: 12px 0 32px; }
+    .iphone { border-radius: 0; padding: 0; height: 100vh; box-shadow: none; width: 100%; }
+    .screen { border-radius: 0; }
+    .dynamic-island { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="logo">don't say <span>Bojio!</span></div>
+  <div class="tagline">Buddy Box — Interactive iPhone Wireframe · Bringing Seniors Closer to Community &amp; Care ❤️</div>
+  <div class="mode-toggle">
+    <button id="modeVol" class="active" onclick="setMode('vol')">📱 Volunteer App</button>
+    <button id="modeBb" onclick="setMode('bb')">👵 Senior Buddy Box</button>
+  </div>
+  <div class="hint">Everything inside the phone is tappable — tabs, chips, buttons, list rows.</div>
+</div>
+
+<div class="iphone">
+  <div class="dynamic-island"></div>
+  <div class="screen">
+    <div class="statusbar"><span>9:41</span><span class="icons">▮▮▮ 📶 🔋</span></div>
+
+    <!-- ================= VOLUNTEER MODE ================= -->
+
+    <!-- Home -->
+    <div class="view" id="v-home">
+      <div class="scroll">
+        <div class="navbar vol-hello" style="padding:6px 0 0; align-items:flex-start;">
+          <div>
+            <div class="logo-sm">don't say <span style="color:var(--purple-mid)">Bojio!</span> 💛</div>
+            <h1>Hello, Volunteer! 👋</h1>
+            <p>Thank you for making a difference in our seniors' lives.</p>
+          </div>
+          <div class="bell" onclick="toast('3 new notifications')">🔔<span class="dot">3</span></div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="overview-head">
+            <span class="t">Today's Overview</span><span class="d">23 May 2025</span>
+          </div>
+          <div class="stats">
+            <div class="stat" style="cursor:pointer" onclick="go('v-seniors','seniors')">
+              <div class="ico" style="background:var(--purple-soft)">👥</div>
+              <div class="num">20</div><div class="lbl">Seniors</div><div class="sub">Active in pilot</div>
+            </div>
+            <div class="stat" style="cursor:pointer" onclick="go('v-checkins','checkins')">
+              <div class="ico" style="background:var(--green-soft)">😊</div>
+              <div class="num">16</div><div class="lbl">Check-ins completed</div><div class="sub">80%</div>
+            </div>
+            <div class="stat" style="cursor:pointer" onclick="go('v-activities','more')">
+              <div class="ico" style="background:var(--amber-soft)">📅</div>
+              <div class="num">3</div><div class="lbl">Activities today</div><div class="sub">Upcoming</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card urgent">
+          <div class="head">
+            <span class="t">Urgent Requests</span>
+            <button class="link-btn" onclick="go('v-calls','calls')">View all</button>
+          </div>
+          <div class="urgent-row">
+            <div class="badge-ico" style="background:var(--red-soft)">😞</div>
+            <div class="who" onclick="go('v-profile','seniors')">
+              <div class="n">Mdm Tan</div><div class="m">Mood: Lonely</div>
+            </div>
+            <span class="time">10:15 AM</span>
+            <button class="btn-call" onclick="toast('📞 Calling Mdm Tan…')">Call Now</button>
+          </div>
+          <div class="urgent-row">
+            <div class="badge-ico" style="background:var(--red)"><span style="color:#fff;font-size:11px;font-weight:900">SOS</span></div>
+            <div class="who">
+              <div class="n">Mr Lim</div><div class="m">SOS Help Requested</div>
+            </div>
+            <span class="time">9:42 AM</span>
+            <button class="btn-call" onclick="toast('🚨 Calling Mr Lim…')">Call Now</button>
+          </div>
+        </div>
+
+        <div class="card" style="cursor:pointer" onclick="go('v-activities','more')">
+          <div class="overview-head" style="margin-bottom:4px;">
+            <span class="t" style="color:var(--ink)">📅 Activities Today</span>
+            <span class="chev">›</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--muted)">Kopi Morning · Chair Exercise · Bingo Fun</div>
+        </div>
+      </div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- Seniors directory -->
+    <div class="view" id="v-seniors">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('v-home','home')">‹</button>
+        <span class="title">Seniors</span>
+        <button class="link-btn" onclick="toast('Showing all 20 seniors')">View all</button>
+      </div>
+      <div class="search">🔍 Search seniors…</div>
+      <div class="scroll" id="seniorList"></div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- Mood check-ins -->
+    <div class="view" id="v-checkins">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('v-home','home')">‹</button>
+        <span class="title">Mood Check-ins</span>
+        <button class="link-btn" onclick="toast('Showing all check-ins')">View all</button>
+      </div>
+      <div class="chips" id="moodChips">
+        <button class="chip active" data-f="all">All</button>
+        <button class="chip" data-f="lonely">Lonely</button>
+        <button class="chip" data-f="okay">Okay</button>
+        <button class="chip" data-f="happy">Happy</button>
+      </div>
+      <div class="scroll" id="checkinList"></div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- Calls & requests -->
+    <div class="view" id="v-calls">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('v-home','home')">‹</button>
+        <span class="title">Calls &amp; Requests</span>
+        <button class="link-btn" onclick="toast('Showing all requests')">View all</button>
+      </div>
+      <div class="chips" id="callChips">
+        <button class="chip active" data-f="all">All</button>
+        <button class="chip" data-f="call">Call Requests</button>
+        <button class="chip" data-f="sos">SOS</button>
+        <button class="chip" data-f="other">Other</button>
+      </div>
+      <div class="scroll" id="callList"></div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- Activities -->
+    <div class="view" id="v-activities">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('v-home','home')">‹</button>
+        <span class="title">Activities Today</span>
+        <span style="width:34px"></span>
+      </div>
+      <div class="daystrip" id="daystrip"></div>
+      <div class="scroll" id="activityList"></div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- Senior profile -->
+    <div class="view" id="v-profile">
+      <div class="navbar">
+        <button class="back-btn" onclick="back()">‹</button>
+        <span class="title">Senior Profile</span>
+        <span style="width:34px"></span>
+      </div>
+      <div class="scroll">
+        <div class="card profile-card">
+          <div class="avatar lg" style="background:#B08BC9; margin:0 auto;">MT</div>
+          <div class="n">Mdm Tan</div>
+          <div class="meta">Age: 72<br>Last active: Today, 10:15 AM</div>
+          <div style="margin-top:10px;"><span class="mood-pill mood-lonely">Mood: Lonely</span></div>
+        </div>
+        <div class="tabs" style="padding:2px 0 14px;">
+          <button class="tab active" data-ptab="overview" onclick="ptab('overview')">Overview</button>
+          <button class="tab" data-ptab="mood" onclick="ptab('mood')">Mood History</button>
+          <button class="tab" data-ptab="notes" onclick="ptab('notes')">Notes</button>
+        </div>
+        <div id="ptab-overview">
+          <div class="prow" onclick="toast('📞 Calling +65 9123 4567…')">
+            <div class="pi">📞</div>
+            <div class="pt"><div class="a">Contact</div><div class="b">+65 9123 4567</div></div>
+            <span class="chev">›</span>
+          </div>
+          <div class="prow" onclick="toast('📞 Calling daughter…')">
+            <div class="pi">👤</div>
+            <div class="pt"><div class="a">Emergency Contact</div><div class="b">Daughter — +65 8123 4567</div></div>
+            <span class="chev">›</span>
+          </div>
+          <div class="prow" onclick="go('v-activities','more')">
+            <div class="pi">🗓️</div>
+            <div class="pt"><div class="a">Activities Joined (This Week)</div><div class="b">1 activity</div></div>
+            <span class="chev">›</span>
+          </div>
+          <div class="prow" onclick="ptab('notes')">
+            <div class="pi">📝</div>
+            <div class="pt"><div class="a">Notes from Volunteers</div><div class="b">Enjoys morning chats and bingo.</div></div>
+            <span class="chev">›</span>
+          </div>
+        </div>
+        <div id="ptab-mood" style="display:none">
+          <div class="mood-hist"><span style="font-size:22px">😞</span><span style="font-weight:800;font-size:13.5px">Lonely</span><span class="d">Today, 10:15 AM</span></div>
+          <div class="mood-hist"><span style="font-size:22px">🙂</span><span style="font-weight:800;font-size:13.5px">Okay</span><span class="d">Yesterday, 9:40 AM</span></div>
+          <div class="mood-hist"><span style="font-size:22px">😊</span><span style="font-weight:800;font-size:13.5px">Happy</span><span class="d">Wed, 10:02 AM</span></div>
+          <div class="mood-hist"><span style="font-size:22px">😊</span><span style="font-weight:800;font-size:13.5px">Happy</span><span class="d">Tue, 9:55 AM</span></div>
+          <div class="mood-hist"><span style="font-size:22px">🙂</span><span style="font-weight:800;font-size:13.5px">Okay</span><span class="d">Mon, 10:20 AM</span></div>
+        </div>
+        <div id="ptab-notes" style="display:none">
+          <div class="note"><div class="who">VOLUNTEER SARAH · 20 MAY</div><div class="txt">Enjoys morning chats and bingo. Prefers calls before noon.</div></div>
+          <div class="note"><div class="who">VOLUNTEER DANIEL · 15 MAY</div><div class="txt">Mentioned missing her late husband. Cheered up after Kopi Session.</div></div>
+          <button class="wide-btn" style="margin:6px 0 0; width:100%;" onclick="toast('📝 New note added (demo)')">+ Add Note</button>
+        </div>
+      </div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- More -->
+    <div class="view" id="v-more">
+      <div class="navbar">
+        <span class="title" style="margin:0 auto;">More</span>
+      </div>
+      <div class="scroll">
+        <div class="prow" onclick="go('v-activities','more')">
+          <div class="pi">📅</div><div class="pt"><div class="a">Activities Today</div><div class="b">Kopi Morning, Chair Exercise, Bingo Fun</div></div><span class="chev">›</span>
+        </div>
+        <div class="prow" onclick="toast('📊 Reports coming soon (demo)')">
+          <div class="pi">📊</div><div class="pt"><div class="a">Reports</div><div class="b">Weekly engagement summary</div></div><span class="chev">›</span>
+        </div>
+        <div class="prow" onclick="setMode('bb')">
+          <div class="pi">📦</div><div class="pt"><div class="a">Preview Buddy Box</div><div class="b">See what seniors see</div></div><span class="chev">›</span>
+        </div>
+        <div class="prow" onclick="toast('⚙️ Settings (demo)')">
+          <div class="pi">⚙️</div><div class="pt"><div class="a">Settings</div><div class="b">Profile, notifications, language</div></div><span class="chev">›</span>
+        </div>
+      </div>
+      <div class="tabbar" data-tabbar></div>
+    </div>
+
+    <!-- ================= BUDDY BOX MODE ================= -->
+
+    <!-- BB Home -->
+    <div class="view" id="b-home">
+      <div class="scroll" style="padding:0 0 16px;">
+        <div class="bb-title" style="padding-top:8px;">don't say <span style="color:var(--purple-mid)">Bojio!</span> 💛</div>
+        <div class="bb-head">
+          <div class="avatar lg" style="background:#B08BC9; width:56px;height:56px;font-size:19px;">MT</div>
+          <div class="msg">Hello, Mdm Tan! ❤️<small>How are you today?</small></div>
+        </div>
+        <div class="bb-grid">
+          <button class="bb-btn bb-green" onclick="go('b-callfamily')"><span class="ic">📞</span><span class="tx">Call Family</span></button>
+          <button class="bb-btn bb-orange" onclick="go('b-volunteer')"><span class="ic">👥</span><span class="tx">Talk to Volunteer</span></button>
+          <button class="bb-btn bb-blue" onclick="go('b-activities')"><span class="ic">📅</span><span class="tx">Join Activities</span></button>
+          <button class="bb-btn bb-purple" onclick="go('b-mood')"><span class="ic">🙂</span><span class="tx">Mood Check-In</span></button>
+          <button class="bb-btn bb-teal" onclick="go('b-health')"><span class="ic">💊</span><span class="tx">Health Reminder</span></button>
+          <button class="bb-btn bb-red" onclick="go('b-sos')"><span class="ic">🆘</span><span class="tx">SOS Help</span></button>
+        </div>
+        <div class="bb-footer">❤️ Don't Say Bojio! Because no senior should feel alone. 😊</div>
+      </div>
+    </div>
+
+    <!-- BB Call family -->
+    <div class="view" id="b-callfamily">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">Call Family</span>
+        <span style="font-size:20px">📞</span>
+      </div>
+      <div class="scroll" style="padding:0 0 16px;">
+        <div class="bb-title">Who would you like to call?</div>
+        <div style="height:12px"></div>
+        <div class="contact-grid">
+          <div class="contact" onclick="startCall('Daughter')">
+            <div class="avatar av" style="background:#E8927C;">D</div>
+            <div class="n">Daughter</div><div class="ph">📞</div>
+          </div>
+          <div class="contact" onclick="startCall('Son')">
+            <div class="avatar av" style="background:#7C9CE8;">S</div>
+            <div class="n">Son</div><div class="ph">📞</div>
+          </div>
+          <div class="contact" onclick="startCall('Sister')">
+            <div class="avatar av" style="background:#C97CB8;">S</div>
+            <div class="n">Sister</div><div class="ph">📞</div>
+          </div>
+        </div>
+        <button class="wide-btn" onclick="toast('More contacts (demo)')">More Contacts ›</button>
+      </div>
+    </div>
+
+    <!-- BB Calling -->
+    <div class="view" id="b-calling">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-callfamily')">‹ Back</button>
+        <span class="title" id="callingTitle">Calling Daughter…</span>
+        <span style="font-size:20px">📞</span>
+      </div>
+      <div class="scroll">
+        <div class="calling-wrap">
+          <div class="pulse-ring"><div class="avatar lg" id="callingAvatar" style="background:#E8927C; width:120px; height:120px; font-size:40px;">D</div></div>
+          <div class="who" id="callingWho">Daughter</div>
+          <div class="st">Calling…</div>
+          <button class="btn-end" onclick="endCall()">📵 End Call</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BB Talk to volunteer -->
+    <div class="view" id="b-volunteer">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">Talk to Volunteer</span>
+        <span style="font-size:20px">👥</span>
+      </div>
+      <div class="scroll" style="padding:0 0 16px;">
+        <div class="vol-hero">
+          <div style="font-size:40px">🧑‍🤝‍🧑</div>
+          <div class="bubble">"Hi! I'm here to help!"<br><small style="color:var(--muted);font-weight:700">— Your friendly volunteer</small></div>
+        </div>
+        <button class="big-action" style="background:var(--amber)" onclick="startCall('Volunteer')"><span class="ic">📞</span> Start Call</button>
+        <button class="big-action" style="background:#D97706" onclick="toast('💬 Chat opened (demo)')"><span class="ic">💬</span> Chat</button>
+        <div class="mood-note" style="background:#FFFBEB;color:#92400E;">❤️ Our volunteers are here to listen and support you!</div>
+      </div>
+    </div>
+
+    <!-- BB Activities -->
+    <div class="view" id="b-activities">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">Join Activities</span>
+        <span style="font-size:20px">📅</span>
+      </div>
+      <div class="scroll" style="padding:0 0 16px;">
+        <div class="bb-title">What would you like to do?</div>
+        <div style="height:10px"></div>
+        <div class="act-card">
+          <div class="em">☕</div>
+          <div class="b"><div class="t">Kopi Session</div><div class="w">Today, 2pm</div></div>
+          <button class="btn-join" onclick="joinAct(this,'Kopi Session')">Join</button>
+        </div>
+        <div class="act-card">
+          <div class="em">🤸</div>
+          <div class="b"><div class="t">Chair Exercise</div><div class="w">Tomorrow, 10am</div></div>
+          <button class="btn-join" onclick="joinAct(this,'Chair Exercise')">Join</button>
+        </div>
+        <div class="act-card">
+          <div class="em">🎱</div>
+          <div class="b"><div class="t">Bingo Fun</div><div class="w">Fri, 3pm</div></div>
+          <button class="btn-join" onclick="joinAct(this,'Bingo Fun')">Join</button>
+        </div>
+        <button class="wide-btn" onclick="toast('More activities (demo)')">See More Activities ›</button>
+      </div>
+    </div>
+
+    <!-- BB Mood check-in -->
+    <div class="view" id="b-mood">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">How are you feeling today?</span>
+        <span style="font-size:20px">🙂</span>
+      </div>
+      <div class="scroll" style="padding:0 0 16px;">
+        <div style="height:8px"></div>
+        <div class="mood-grid">
+          <div class="mood-opt mo-happy" onclick="pickMood(this,'Happy 😊')"><div class="fc">😊</div><div class="t">Happy</div><div class="s">I'm feeling great!</div></div>
+          <div class="mood-opt mo-okay" onclick="pickMood(this,'Okay 🙂')"><div class="fc">😐</div><div class="t">Okay</div><div class="s">I'm doing okay.</div></div>
+          <div class="mood-opt mo-lonely" onclick="pickMood(this,'Lonely 😞')"><div class="fc">😞</div><div class="t">Lonely</div><div class="s">I feel a bit lonely.</div></div>
+          <div class="mood-opt mo-help" onclick="pickMood(this,'Need Help 🆘')"><div class="fc">😟</div><div class="t">Need Help</div><div class="s">I need support.</div></div>
+        </div>
+        <div class="mood-note">❤️ It's okay to not be okay. We're here for you.</div>
+      </div>
+    </div>
+
+    <!-- BB Health reminder -->
+    <div class="view" id="b-health">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">Health Reminder</span>
+        <span style="font-size:20px">💊</span>
+      </div>
+      <div class="scroll">
+        <div class="health-card">
+          <div class="em">💊🥛</div>
+          <div class="t">Time to take your medication!</div>
+          <div class="s">Drink water and stay healthy.</div>
+          <button class="btn-done" onclick="go('b-thanks'); toast('✅ Medication logged')">✔ Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BB SOS -->
+    <div class="view" id="b-sos">
+      <div class="navbar">
+        <button class="back-btn" onclick="go('b-home')">‹ Back</button>
+        <span class="title">SOS Help</span>
+        <span style="font-size:20px">🆘</span>
+      </div>
+      <div class="scroll" style="padding:0 0 16px;">
+        <div class="sos-card">
+          <div class="sos-badge">SOS</div>
+          <div>
+            <div class="t">Do you need help?</div>
+            <div class="s">We will alert your emergency contacts and volunteers.</div>
+          </div>
+        </div>
+        <div class="sos-actions">
+          <button class="btn-okay" onclick="go('b-home'); toast('SOS cancelled — glad you\'re okay! ❤️')">I'm Okay<small>Cancel SOS</small></button>
+          <button class="btn-sos-go" onclick="sosSent()">Yes, I Need Help<small>Send SOS Alert</small></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BB Thank you -->
+    <div class="view" id="b-thanks">
+      <div class="scroll">
+        <div class="thanks">
+          <div class="em">🥰</div>
+          <div class="t" id="thanksTitle">Thank you! ❤️</div>
+          <div class="s" id="thanksMsg">You are not alone.<br>We're here for you, always!</div>
+          <button class="btn-home" onclick="go('b-home')">🏠 Back to Home</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div class="home-indicator"></div>
+  </div>
+</div>
+
+<script>
+  /* ---------- Data ---------- */
+  const seniors = [
+    { id:'tan',    name:'Mdm Tan',    initials:'MT', color:'#B08BC9', mood:'lonely', moodLabel:'Lonely', emoji:'😞', time:'Today, 10:15 AM' },
+    { id:'lee',    name:'Mr Lee',     initials:'ML', color:'#7CA982', mood:'okay',   moodLabel:'Okay',   emoji:'🙂', time:'Today, 9:30 AM' },
+    { id:'rahayu', name:'Mdm Rahayu', initials:'MR', color:'#D9A05B', mood:'happy',  moodLabel:'Happy',  emoji:'😊', time:'Today, 8:45 AM' },
+    { id:'wong',   name:'Mr Wong',    initials:'MW', color:'#6E8FB5', mood:'happy',  moodLabel:'Happy',  emoji:'😊', time:'Yesterday, 7:20 PM' },
+    { id:'lim',    name:'Mr Lim',     initials:'ML', color:'#C97C7C', mood:'okay',   moodLabel:'Okay',   emoji:'🙂', time:'Today, 9:42 AM' },
+  ];
+
+  const calls = [
+    { name:'Mdm Tan', type:'call',  label:'Call Request',       time:'Today, 10:16 AM', status:'Completed',   st:'st-done',     ico:'📞', bg:'var(--green)' },
+    { name:'Mr Lee',  type:'call',  label:'Call Request',       time:'Today, 9:31 AM',  status:'Completed',   st:'st-done',     ico:'📞', bg:'var(--amber)' },
+    { name:'Mr Lim',  type:'sos',   label:'SOS Help Requested', time:'Today, 9:42 AM',  status:'In Progress', st:'st-progress', ico:'SOS', bg:'var(--red)' },
+    { name:'Mdm Rahayu', type:'other', label:'Grocery Assistance', time:'Today, 8:50 AM', status:'Completed', st:'st-done',     ico:'🛒', bg:'var(--blue)' },
+  ];
+
+  const activities = [
+    { emoji:'☕', bg:'var(--amber-soft)', title:'Kopi Morning',   tag:'A casual chat over kopi!',   time:'10:00 AM – 11:00 AM', place:'Community Room 1',  count:'10 Seniors' },
+    { emoji:'🧘', bg:'var(--blue-soft)',  title:'Chair Exercise', tag:'Stay active, stay strong!',  time:'2:00 PM – 3:00 PM',   place:'Activity Hall',     count:'8 Seniors' },
+    { emoji:'🎱', bg:'var(--amber-soft)', title:'Bingo Fun',      tag:"Let's play and win prizes!", time:'4:00 PM – 5:00 PM',   place:'Multi-Purpose Hall', count:'12 Seniors' },
+  ];
+
+  const days = [
+    ['Mon','19'],['Tue','20'],['Wed','21'],['Thu','22'],['Fri','23'],['Sat','24'],['Sun','25']
+  ];
+
+  const volTabs = [
+    { key:'home',     icon:'🏠', label:'Home',      view:'v-home' },
+    { key:'seniors',  icon:'👥', label:'Seniors',   view:'v-seniors' },
+    { key:'checkins', icon:'🤍', label:'Check-ins', view:'v-checkins' },
+    { key:'calls',    icon:'📞', label:'Calls',     view:'v-calls' },
+    { key:'more',     icon:'⋯',  label:'More',      view:'v-more' },
+  ];
+
+  /* ---------- Router ---------- */
+  let currentView = 'v-home';
+  let history = [];
+
+  function go(id, tabKey) {
+    if (id !== currentView) history.push(currentView);
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    currentView = id;
+    if (tabKey) setActiveTab(tabKey);
+  }
+
+  function back() {
+    const prev = history.pop() || (currentView.startsWith('b-') ? 'b-home' : 'v-home');
+    go(prev);
+  }
+
+  function setMode(mode) {
+    history = [];
+    document.getElementById('modeVol').classList.toggle('active', mode === 'vol');
+    document.getElementById('modeBb').classList.toggle('active', mode === 'bb');
+    go(mode === 'vol' ? 'v-home' : 'b-home', mode === 'vol' ? 'home' : null);
+    history = [];
+  }
+
+  /* ---------- Tab bar ---------- */
+  function renderTabbars() {
+    document.querySelectorAll('[data-tabbar]').forEach(bar => {
+      bar.innerHTML = volTabs.map(t =>
+        `<button class="tb" data-key="${t.key}" onclick="go('${t.view}','${t.key}')">
+           <span class="i">${t.icon}</span>${t.label}
+         </button>`).join('');
+    });
+  }
+  function setActiveTab(key) {
+    document.querySelectorAll('[data-tabbar] .tb').forEach(b =>
+      b.classList.toggle('active', b.dataset.key === key));
+  }
+
+  /* ---------- Volunteer lists ---------- */
+  function moodClass(m) { return m === 'lonely' ? 'mood-lonely' : m === 'okay' ? 'mood-okay' : 'mood-happy'; }
+
+  function renderSeniors() {
+    document.getElementById('seniorList').innerHTML = seniors.map(s => `
+      <div class="row" onclick="openProfile('${s.name}')">
+        <div class="avatar" style="background:${s.color}">${s.initials}</div>
+        <div class="info">
+          <div class="n">${s.name}</div>
+          <div class="s">Last check-in: ${s.time}</div>
+          <span class="mood-pill ${moodClass(s.mood)}">${s.emoji} ${s.moodLabel}</span>
+        </div>
+        <span class="chev">›</span>
+      </div>`).join('');
+  }
+
+  function renderCheckins(filter = 'all') {
+    const list = seniors.filter(s => filter === 'all' || s.mood === filter);
+    document.getElementById('checkinList').innerHTML = list.length ? list.map(s => `
+      <div class="row">
+        <div class="avatar" style="background:${s.color}" onclick="openProfile('${s.name}')">${s.initials}</div>
+        <div class="info" onclick="openProfile('${s.name}')">
+          <div class="n">${s.name}</div>
+          <div class="s">${s.time}</div>
+          <span class="mood-pill ${moodClass(s.mood)}">${s.emoji} ${s.moodLabel}</span>
+        </div>
+        <button class="btn-connect" onclick="event.stopPropagation(); toast('🤝 Connecting with ${s.name}…')">Connect</button>
+      </div>`).join('')
+      : '<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px 0;">No check-ins in this category.</div>';
+  }
+
+  function renderCalls(filter = 'all') {
+    const list = calls.filter(c => filter === 'all' || c.type === filter);
+    document.getElementById('callList').innerHTML = list.length ? list.map(c => `
+      <div class="row" onclick="toast('Opening request from ${c.name}…')">
+        <div class="badge-ico" style="background:${c.bg}">
+          ${c.ico === 'SOS' ? '<span style="color:#fff;font-size:11px;font-weight:900">SOS</span>' : `<span style="filter:brightness(10)">${c.ico}</span>`}
+        </div>
+        <div class="info">
+          <div class="n">${c.name}</div>
+          <div class="s">${c.label}</div>
+          <div class="s">${c.time}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <span class="chev">›</span>
+          <span class="status-pill ${c.st}">${c.status}</span>
+        </div>
+      </div>`).join('')
+      : '<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px 0;">No requests in this category.</div>';
+  }
+
+  function renderDays() {
+    document.getElementById('daystrip').innerHTML = days.map(([w, n], i) => `
+      <div class="day ${n === '23' ? 'active' : ''}" onclick="pickDay(this, '${w} ${n}')">
+        <div class="dw">${w}</div><div class="dn">${n}</div>
+      </div>`).join('');
+  }
+  function pickDay(el, label) {
+    document.querySelectorAll('.day').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+    toast(`📅 Showing activities for ${label} May`);
+  }
+
+  function renderActivities() {
+    document.getElementById('activityList').innerHTML = activities.map(a => `
+      <div class="activity">
+        <div class="thumb" style="background:${a.bg}">${a.emoji}</div>
+        <div class="body">
+          <div class="top">
+            <div>
+              <div class="t">${a.title}</div>
+              <div class="tagline">${a.tag}</div>
+            </div>
+            <span class="count-pill">${a.count}</span>
+          </div>
+          <div class="meta">🗓️ ${a.time}<br>📍 ${a.place}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function openProfile(name) {
+    if (name !== 'Mdm Tan') { toast(`${name}'s profile — demo shows Mdm Tan`); }
+    go('v-profile', 'seniors');
+  }
+
+  function ptab(key) {
+    document.querySelectorAll('[data-ptab]').forEach(t => t.classList.toggle('active', t.dataset.ptab === key));
+    ['overview', 'mood', 'notes'].forEach(k => {
+      document.getElementById('ptab-' + k).style.display = k === key ? '' : 'none';
+    });
+  }
+
+  /* ---------- Filter chips ---------- */
+  function wireChips(containerId, renderFn) {
+    const el = document.getElementById(containerId);
+    el.addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      el.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderFn(chip.dataset.f);
+    });
+  }
+
+  /* ---------- Buddy Box interactions ---------- */
+  const callColors = { Daughter:'#E8927C', Son:'#7C9CE8', Sister:'#C97CB8', Volunteer:'#F59E0B' };
+  function startCall(who) {
+    document.getElementById('callingTitle').textContent = `Calling ${who}…`;
+    document.getElementById('callingWho').textContent = who;
+    const av = document.getElementById('callingAvatar');
+    av.textContent = who[0];
+    av.style.background = callColors[who] || '#9CA3AF';
+    go('b-calling');
+  }
+  function endCall() {
+    setThanks('Thank you! ❤️', 'It was lovely to connect.<br>We\'re here for you, always!');
+    go('b-thanks');
+  }
+  function joinAct(btn, name) {
+    btn.textContent = '✔ Joined';
+    btn.classList.add('joined');
+    toast(`🎉 You joined ${name}!`);
+  }
+  function pickMood(el, label) {
+    document.querySelectorAll('.mood-opt').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    setTimeout(() => {
+      setThanks('Thank you for sharing! ❤️', `Mood recorded: <b>${label}</b><br>You are not alone. We\'re here for you, always!`);
+      go('b-thanks');
+    }, 450);
+  }
+  function sosSent() {
+    setThanks('🚨 Help is on the way!', 'We\'ve alerted your emergency contacts<br>and volunteers. Stay calm — you are not alone.');
+    go('b-thanks');
+  }
+  function setThanks(title, msg) {
+    document.getElementById('thanksTitle').innerHTML = title;
+    document.getElementById('thanksMsg').innerHTML = msg;
+  }
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 1900);
+  }
+
+  /* ---------- Init ---------- */
+  renderTabbars();
+  renderSeniors();
+  renderCheckins();
+  renderCalls();
+  renderDays();
+  renderActivities();
+  wireChips('moodChips', renderCheckins);
+  wireChips('callChips', renderCalls);
+  go('v-home', 'home');
+  history = [];
+</script>
+</body>
+</html>
