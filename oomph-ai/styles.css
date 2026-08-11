@@ -179,7 +179,13 @@ h1 em { font-style: normal; color: var(--accent); }
   justify-content: center;
   box-shadow: 0 24px 64px -24px rgba(11,11,12,0.45);
 }
-video.video-frame { display: block; width: 100%; height: auto; aspect-ratio: auto; }
+video.video-frame {
+  display: block;
+  width: auto; max-width: 100%;
+  height: auto; max-height: 600px;
+  aspect-ratio: auto;
+  margin: 0 auto;
+}
 .video-rings {
   position: absolute;
   right: -60px; bottom: -70px;
