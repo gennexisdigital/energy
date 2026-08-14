@@ -86,6 +86,7 @@ h1 em { font-style: normal; color: var(--accent); }
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 0.95rem;
@@ -127,10 +128,10 @@ h1 em { font-style: normal; color: var(--accent); }
 .logo { display: inline-flex; align-items: center; text-decoration: none; color: var(--brand-grey); }
 .logo-mark { height: 40px; width: auto; overflow: visible; }
 .logo-word {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 158px;
-  letter-spacing: -0.01em;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 212px;
+  letter-spacing: -0.005em;
   fill: currentColor;
 }
 .logo-tld { letter-spacing: 0.01em; }
@@ -424,8 +425,31 @@ video.video-frame {
   .story-grid { grid-template-columns: 72px 1fr; gap: 28px; }
 }
 @media (max-width: 767px) {
-  .section { padding: 80px 0; }
-  .hero { padding: 128px 0 64px; }
+  /* Compact mobile scale: sized for small screens, not shrunk desktop */
+  h1 { font-size: 2.05rem; }
+  h2 { font-size: 1.55rem; }
+  .section { padding: 56px 0; }
+  .hero { padding: 100px 0 48px; }
+  .hero-grid { gap: 32px; }
+  .lede { font-size: 1rem; margin: 14px 0 24px; }
+  .eyebrow { font-size: 0.7rem; margin-bottom: 12px; }
+  .btn { padding: 12px 22px; font-size: 0.9rem; min-height: 42px; }
+  .btn-sm { padding: 8px 14px; font-size: 0.8rem; min-height: 36px; }
+  .logo-mark { height: 30px; }
+  .section-head { margin-bottom: 36px; }
+  .section-sub { font-size: 0.95rem; margin-top: 12px; }
+  .stat-num { font-size: 1.9rem; }
+  .stat-label { font-size: 0.66rem; }
+  .rotator { font-size: 1.2rem; padding: 20px 0 32px; }
+  .card { padding: 20px 18px; }
+  .case { padding: 22px 20px; }
+  .center { margin-top: 32px; }
+  .story-tagline { font-size: 1.1rem; padding-top: 20px; margin-top: 24px !important; }
+  .ind-cta { margin-top: 40px; }
+  .why-grid, .demo-grid { gap: 32px; }
+  video.video-frame { max-height: 420px; }
+  .footer-inner { padding: 40px 24px; }
+  .roi-row span { padding: 12px 14px; font-size: 0.85rem; }
   .nav-links {
     display: none;
     position: absolute;
@@ -445,6 +469,7 @@ video.video-frame {
   .stat:nth-child(even) { border-left: 1px solid var(--line); }
   .cards-4, .ind-grid, .steps { grid-template-columns: 1fr; }
   .field-row { grid-template-columns: 1fr; }
+  .stat { padding: 20px 14px; min-height: 108px; }
   .roi-row { grid-template-columns: 1fr; }
   .roi-row span:first-child { border-right: none; border-bottom: 1px dashed var(--line); }
   .roi-head { display: none; }
