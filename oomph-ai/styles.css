@@ -127,15 +127,7 @@ h1 em { font-style: normal; color: var(--accent); }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 24px; }
 .logo { display: inline-flex; align-items: center; text-decoration: none; color: var(--brand-grey); }
 .logo-mark { height: 40px; width: auto; overflow: visible; }
-.logo-word {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 212px;
-  letter-spacing: -0.005em;
-  fill: currentColor;
-}
-.logo-tld { letter-spacing: 0.01em; }
-.logo-smile { stroke: currentColor; }
+
 .nav-links { display: flex; gap: 28px; }
 .nav-links a {
   font-size: 0.9rem;
@@ -391,8 +383,13 @@ video.video-frame {
 /* Footer */
 .footer { background: var(--ink); color: var(--muted-light); border-top: 1px solid var(--line-ink); }
 .footer-inner { padding: 56px 24px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: start; }
-.logo-foot { color: #d9d7d2; }
-.logo-foot .logo-mark { height: 34px; }
+.logo-foot {
+  display: inline-flex;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+.logo-foot .logo-mark { height: 28px; }
 .footer-tag { font-size: 0.88rem; margin-top: 8px; }
 .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
 .footer-links a { font-size: 0.85rem; color: var(--muted-light); text-decoration: none; transition: color var(--dur) var(--ease); }
